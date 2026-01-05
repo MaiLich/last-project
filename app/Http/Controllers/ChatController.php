@@ -43,10 +43,7 @@ class ChatController extends Controller
                 ->get();
 
             // Mark as read for user
-            Message::where('conversation_id', $conversation->id)
-                ->where('sender_type', '!=', \App\Models\User::class)
-                ->update(['is_read' => true]);
-
+            $messages->where('sender_type', '!=', \App\Models\User::class)->update(['is_read' => true]);
 
             return view('chat.index', compact('conversation', 'messages'));
         } catch (\Exception $e) {
@@ -94,10 +91,7 @@ class ChatController extends Controller
             ->firstOrFail();
 
         // Mark as read
-        Message::where('conversation_id', $conversation->id)
-            ->where('sender_type', '!=', \App\Models\Admin::class)
-            ->update(['is_read' => true]);
-
+        $conversation->messages->where('sender_type', '!=', \App\Models\Admin::class)->update(['is_read' => true]);
 
         return view('admin.chat.conversation_detail', [
             'conversation' => $conversation,
@@ -219,15 +213,10 @@ class ChatController extends Controller
 
             // Mark as read depending on who is requesting
             if ($userId) {
-                Message::where('conversation_id', $conversation->id)
-                    ->where('sender_type', '!=', \App\Models\User::class)
-                    ->update(['is_read' => true]);
+                $messages->where('sender_type', '!=', \App\Models\User::class)->update(['is_read' => true]);
             } elseif ($adminId) {
-                Message::where('conversation_id', $conversation->id)
-                    ->where('sender_type', '!=', \App\Models\Admin::class)
-                    ->update(['is_read' => true]);
+                $messages->where('sender_type', '!=', \App\Models\Admin::class)->update(['is_read' => true]);
             }
-
 
             return response()->json($messages);
         } catch (\Exception $e) {
