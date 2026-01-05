@@ -282,6 +282,15 @@ $sections = \App\Models\Section::sections();
                         <li>
                             <a href="{{ route('front.blog.index') }}">Blog</a>
                         </li>
+
+                        <li>
+                        @auth
+                            <a href="{{ route('chat.index') }}">Chat</a>
+                        @else
+                            <a href="{{ url('user/login-register') }}">Chat</a>
+                        @endauth
+                        </li>
+
                         <li>
                             <a href="{{ route('chatbot.index') }}">ChatBot</a>
                         </li>
