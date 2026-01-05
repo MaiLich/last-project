@@ -8,6 +8,23 @@ use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\ChatbotController;
 
+
+// USER
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/messages/{conversationId}', [ChatController::class, 'getMessages'])->name('chat.messages');
+});
+
+// ADMIN
+Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
+    Route::get('/chat', [ChatController::class, 'adminIndex'])->name('admin.chat.index');
+    Route::get('/chat/conversation/{conversationId}', [ChatController::class, 'adminShowConversation'])->name('admin.chat.show');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('admin.chat.send');
+    Route::get('/chat/messages/{conversationId}', [ChatController::class, 'getMessages'])->name('admin.chat.messages');
+});
+
+
 if (Schema::hasTable('categories')) {
     $catUrls = \App\Models\Category::select('url')
         ->where('status', 1)

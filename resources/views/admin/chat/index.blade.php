@@ -1,138 +1,281 @@
 @extends('admin.layout.layout')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <!-- List conversations bên trái -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">Danh sách các cuộc trò chuyện</div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        @forelse($conversations as $conv)
-                            <li class="list-group-item conversation-item {{ $conv->id == $selectedConversation?->id ? 'active' : '' }}" data-id="{{ $conv->id }}">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <strong>{{ $conv->user->name ?? 'User' }}</strong>
-                                        <p class="mb-0 text-truncate">{{ $conv->latestMessage?->message ?? 'No message' }}</p>
-                                    </div>
-                                    <small class="text-muted">{{ $conv->updated_at->diffForHumans() }}</small>
-                                </div>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-center">Chưa có cuộc trò chuyện</li>
-                        @endforelse
-                    </ul>
-                </div>
-            </div>
-        </div>
+<style>
+    .chat-wrapper { display:flex; gap:16px; height: calc(100vh - 160px); }
+    .conv-list { width: 320px; background:#fff; border-radius:8px; overflow:auto; border:1px solid #e5e7eb; }
+    .conv-item { padding:12px 14px; cursor:pointer; border-bottom:1px solid #f1f5f9; }
+    .conv-item.active { background:#eef2ff; }
+    .conv-name { font-weight:600; }
+    .conv-last { font-size:13px; opacity:.75; margin-top:4px; }
 
-        <!-- Detail bên phải -->
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header" id="conversation-header">
-                    @if($selectedConversation)
-                        Chat với {{ $selectedConversation->user->name }}
-                    @else
-                        Chọn cuộc trò chuyện
-                    @endif
-                </div>
-                <div class="card-body" id="chat-body" style="height: 500px; overflow-y: auto;">
-                    @if($selectedConversation)
-                        @include('admin.chat.conversation_detail', ['conversation' => $selectedConversation, 'messages' => $messages])
-                    @endif
-                </div>
-                @if($selectedConversation)
-                    
-                @endif
+    .chat-panel { flex:1; background:#fff; border-radius:8px; border:1px solid #e5e7eb; overflow:hidden; display:flex; flex-direction:column; }
+    #chat-body { flex:1; min-height:0; }
+
+    .message { max-width:80%; padding:10px 12px; border-radius:18px; word-wrap:break-word; margin-bottom:8px; }
+    .message.sent { background:#1877f2; color:#fff; margin-left:auto; border-bottom-right-radius:6px; }
+    .message.received { background:#e4e6eb; color:#000; border-bottom-left-radius:6px; }
+</style>
+
+<div class="chat-wrapper">
+    <div class="conv-list">
+        @foreach($conversations as $conv)
+            <div
+                class="conv-item conversation-item {{ (($selectedConversation?->id ?? null) == $conv->id) ? 'active' : '' }}"
+                data-id="{{ $conv->id }}"
+            >
+                <div class="conv-name">{{ $conv->user?->name ?? 'User' }}</div>
+                <div class="conv-last">{{ $conv->latestMessage?->message ?? '' }}</div>
             </div>
+        @endforeach
+    </div>
+
+    <div class="chat-panel">
+        <div id="chat-body">
+            @if($selectedConversation)
+                @include('admin.chat.conversation_detail', [
+                    'conversation' => $selectedConversation,
+                    'messages' => $messages
+                ])
+            @else
+                <div class="p-4">Chưa có cuộc trò chuyện.</div>
+            @endif
         </div>
     </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    let currentConversationId = {{ $selectedConversation?->id ?? 'null' }};
-    let echoListener = null; // Để unsubscribe khi change conv
+document.addEventListener('DOMContentLoaded', function () {
+    const CSRF = @json(csrf_token());
+    let currentConversationId = @json($selectedConversation?->id);
+    let pollTimer = null;
+    let lastId = 0;
 
-    // Click conversation để load detail via AJAX
-    $('.conversation-item').click(function() {
-        currentConversationId = $(this).data('id');
-        console.log('Clicked conversation ID: ' + currentConversationId); // Debug
-        loadConversationDetail(currentConversationId);
-        $('.conversation-item').removeClass('active');
-        $(this).addClass('active');
+    let warnedSession = false; // tránh alert spam
+
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&','&amp;')
+            .replaceAll('<','&lt;')
+            .replaceAll('>','&gt;')
+            .replaceAll('"','&quot;')
+            .replaceAll("'",'&#039;');
+    }
+
+    function normalizeSenderType(t) {
+        // Chuẩn hoá mọi kiểu: "App\\Models\\Admin" / "App\\\\Models\\\\Admin" / ...
+        let s = String(t || '');
+        // đổi mọi cụm "\\\\" (2 backslash) thành "\\" (1 backslash)
+        while (s.includes('\\\\')) s = s.replaceAll('\\\\', '\\');
+        return s;
+    }
+
+    function isAdminMessage(msg) {
+        const senderType = normalizeSenderType(msg?.sender_type);
+        // Lấy phần cuối sau dấu "\" => Admin/User
+        const tail = senderType.split('\\').pop();
+        return tail === 'Admin';
+    }
+
+    function messagesBox() {
+        return document.querySelector('#chat-body #chat-messages');
+    }
+
+    function scrollToBottom() {
+        const box = messagesBox();
+        if (!box) return;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function renderMessage(msg) {
+        const adminMsg = isAdminMessage(msg);
+        const cls = adminMsg ? 'sent' : 'received';
+        const time = msg.created_at ? new Date(msg.created_at).toLocaleString('vi-VN') : '';
+
+        const wrap = document.createElement('div');
+        wrap.className = `message ${cls}`;
+        wrap.innerHTML = `
+            <div>${escapeHtml(msg.message ?? '').replace(/\n/g,'<br>')}</div>
+            <small class="text-muted" style="opacity:.7; display:block; margin-top:6px">${escapeHtml(time)}</small>
+        `;
+        return wrap;
+    }
+
+    async function fetchJsonSafe(url, options = {}) {
+        const res = await fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                ...(options.headers || {})
+            },
+            ...options
+        });
+
+        const ct = (res.headers.get('content-type') || '').toLowerCase();
+        const raw = await res.text();
+
+        // Nếu backend trả HTML (thường do hết session/redirect), coi như lỗi rõ ràng
+        if (!ct.includes('application/json')) {
+            const looksHtml = raw.includes('<html') || raw.includes('<!DOCTYPE');
+            if (looksHtml) throw new Error('Hết phiên đăng nhập. Refresh trang admin/chat.');
+            // không phải JSON thì cũng báo lỗi
+            throw new Error('Response không phải JSON.');
+        }
+
+        let data = null;
+        try { data = JSON.parse(raw); } catch(e) {}
+
+        if (!res.ok) {
+            throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+        }
+
+        // Một số backend có thể bọc dạng {messages:[...]}
+        if (data && Array.isArray(data.messages)) return data.messages;
+
+        return data;
+    }
+
+    async function loadAll(convId) {
+        const box = messagesBox();
+        if (!box) return;
+
+        const list = await fetchJsonSafe(`/admin/chat/messages/${convId}?t=${Date.now()}`);
+        box.innerHTML = '';
+        lastId = 0;
+
+        (list || []).forEach(m => {
+            box.appendChild(renderMessage(m));
+            lastId = Math.max(lastId, Number(m.id || 0));
+        });
+
+        scrollToBottom();
+    }
+
+    async function loadNew(convId) {
+        const box = messagesBox();
+        if (!box) return;
+
+        const url = lastId
+            ? `/admin/chat/messages/${convId}?since_id=${lastId}&t=${Date.now()}`
+            : `/admin/chat/messages/${convId}?t=${Date.now()}`;
+
+        const list = await fetchJsonSafe(url);
+
+        let added = false;
+        (list || []).forEach(m => {
+            box.appendChild(renderMessage(m));
+            lastId = Math.max(lastId, Number(m.id || 0));
+            added = true;
+        });
+
+        if (added) scrollToBottom();
+    }
+
+    function stopPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    function startPolling(convId) {
+        stopPolling();
+        lastId = 0;
+        warnedSession = false;
+
+        loadAll(convId).catch(err => console.error(err));
+
+        pollTimer = setInterval(() => {
+            if (document.hidden) return;
+
+            loadNew(convId).catch((err) => {
+                // nếu hết session -> báo 1 lần rồi dừng poll
+                if (!warnedSession) {
+                    warnedSession = true;
+                    console.error(err);
+                    alert('Lỗi: ' + (err?.message || 'Server error'));
+                }
+                stopPolling();
+            });
+        }, 1000);
+    }
+
+    async function loadConversationDetail(convId) {
+        const html = await fetch(`/admin/chat/conversation/${convId}?t=${Date.now()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(r => r.text());
+
+        document.getElementById('chat-body').innerHTML = html;
+        startPolling(convId);
+    }
+
+    // Click chọn conversation
+    document.querySelectorAll('.conversation-item').forEach(el => {
+        el.addEventListener('click', function () {
+            const convId = Number(this.dataset.id);
+            if (!convId) return;
+
+            currentConversationId = convId;
+
+            document.querySelectorAll('.conversation-item').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+
+            loadConversationDetail(convId).catch(err => console.error(err));
+        });
     });
 
-    // Load detail
-    function loadConversationDetail(id) {
-        $.get('/admin/chat/conversation/' + id, function(data) {
-            $('#chat-body').html($(data).html());  // Load full detail (messages)
-            $('#conversation-header').text('Chat với ' + $(data).find('#user-name').text());
-            $('#chat-body').scrollTop($('#chat-body')[0].scrollHeight);
-            // Update form conversation_id
-            $('input[name="conversation_id"]').val(id);
-            console.log('Loaded conversation ID: ' + id); // Debug
-            setupRealTimeListener(id); // Setup Echo for new conv
-        }).fail(function(xhr) {
-            console.error('Load fail: ' + xhr.status + ' - ' + xhr.responseText);
-        });
-    }
+    // GLOBAL: gọi từ form trong partial
+    window.sendAdminMessage = async function (convId) {
+        convId = convId || currentConversationId;
+        if (!convId) return;
 
-    // Function render message (tích hợp từ detail)
-    function renderMessage(msg) {
-        const isMe = msg.sender_type === 'App\\Models\\Admin' && msg.sender_id === {{ auth('admin')->id() }};
+        const textarea = document.getElementById(`message-input-${convId}`);
+        if (!textarea) return;
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'mb-3 ' + (isMe ? 'text-end' : '');
+        const message = (textarea.value || '').trim();
+        if (!message) return;
 
-        const time = new Date(msg.created_at);
-        const timeStr = time.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) +
-                        ' - ' + time.toLocaleDateString('vi-VN');
+        textarea.disabled = true;
 
-        wrapper.innerHTML = `
-            <div class="d-inline-block p-3 rounded shadow-sm ${isMe ? 'bg-primary text-white' : 'bg-white border'}"
-                 style="max-width: 75%;">
-                ${msg.message.replace(/\n/g, '<br>')}
-                <small class="d-block mt-2 opacity-75">${timeStr}</small>
-            </div>
-        `;
-        return wrapper;
-    }
+        try {
+            const data = await fetchJsonSafe('/admin/chat/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF
+                },
+                body: JSON.stringify({
+                    conversation_id: convId,
+                    message: message
+                })
+            });
 
+            textarea.value = '';
+            textarea.focus();
 
-    // Setup real-time Echo listener dynamic
-    function setupRealTimeListener(convId) {
-        if (echoListener) {
-            window.Echo.leave('chat.' + echoListener); // Unsubscribe old
+            // append luôn
+            if (data?.message) {
+                const box = messagesBox();
+                if (box) {
+                    box.appendChild(renderMessage(data.message));
+                    lastId = Math.max(lastId, Number(data.message.id || 0));
+                    scrollToBottom();
+                }
+            } else {
+                await loadNew(convId);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi: ' + (err.message || 'Server error'));
+        } finally {
+            textarea.disabled = false;
         }
-        echoListener = convId;
-        if (window.Echo) {
-            window.Echo.private('chat.' + convId)
-                .listen('MessageSent', function(e) {
-                    $('#chat-messages').append(renderMessage(e.message));
-                    $('#chat-body').scrollTop($('#chat-body')[0].scrollHeight);
-                });
-        }
-    }
+    };
 
-    // Init for first load
+    // Init
     if (currentConversationId) {
-        setupRealTimeListener(currentConversationId);
+        startPolling(currentConversationId);
     }
 });
 </script>
-
-<style>
-.message { padding: 10px; border-radius: 10px; margin-bottom: 10px; }
-.sent { background: #007bff; color: white; text-align: right; }
-.received { background: #e9ecef; text-align: left; }
-.h-100 { height: 100%; }
-.flex-grow-1 { flex-grow: 1; }
-.mb-3 { margin-bottom: 1rem; }
-.text-end { text-align: right; }
-.rounded { border-radius: 0.5rem; }
-.opacity-75 { opacity: 0.75; }
-.input-group textarea { resize: none; }
-</style>
 @endsection
