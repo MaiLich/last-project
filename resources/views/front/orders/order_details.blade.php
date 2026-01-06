@@ -1,4 +1,4 @@
-{{-- This page is rendered by orders() method inside Front/OrderController.php (depending on if the order id Optional Parameter (slug) is passed in or not) --}}
+
 @extends('front.layout.layout')
 
 @section('content')

@@ -1,4 +1,4 @@
-{{-- This page is rendered by orderDetails() method inside Admin/OrderController.php --}}
+
 @extends('admin.layout.layout')
 
 
@@ -7,10 +7,9 @@
         <div class="content-wrapper">
 
 
-            {{-- Displaying Laravel Validation Errors: https://laravel.com/docs/9.x/validation#quick-displaying-the-validation-errors --}}
-            {{-- Determining If An Item Exists In The Session (using has() method): https://laravel.com/docs/9.x/session#determining-if-an-item-exists-in-the-session --}}
-            @if (Session::has('error_message')) <!-- Check AdminController.php, updateAdminPassword() method -->
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            
+            
+            @if (Session::has('error_message'))                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Lỗi:</strong> {{ Session::get('error_message') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -20,10 +19,10 @@
 
 
 
-            {{-- Displaying Laravel Validation Errors: https://laravel.com/docs/9.x/validation#quick-displaying-the-validation-errors --}}
+            
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{-- <strong>Error:</strong> {{ Session::get('error_message') }} --}}
+                    
 
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -36,12 +35,11 @@
             @endif
 
 
-            {{-- Displaying The Validation Errors: https://laravel.com/docs/9.x/validation#quick-displaying-the-validation-errors AND https://laravel.com/docs/9.x/blade#validation-errors --}}
-            {{-- Determining If An Item Exists In The Session (using has() method): https://laravel.com/docs/9.x/session#determining-if-an-item-exists-in-the-session --}}
-            {{-- Our Bootstrap success message in case of updating admin password is successful: --}}
-            {{-- Displaying Success Message --}}
-            @if (Session::has('success_message')) <!-- Check vendorRegister() method in Front/VendorController.php -->
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+            
+            
+            
+            
+            @if (Session::has('success_message'))                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <strong>Thành công:</strong> {{ Session::get('success_message') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -237,14 +235,14 @@
                 <div class="col-md-6 grid-margin stretch-card">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Cập nhật trạng thái đơn hàng</h4>  {{-- determined by 'admin'-s ONLY, not 'vendor'-s --}}
+                            <h4 class="card-title">Cập nhật trạng thái đơn hàng</h4>  
 
-                            {{-- Allowing the general "Update Order Status" feature for 'admin'-s ONLY, and restricting it from 'vendor'-s ('vendor'-s can update their Ordered Products item statuses ONLY (at this page bottom)) --}}
-                            @if (Auth::guard('admin')->user()->type != 'vendor') {{-- If the authenticated/logged-in user is 'admin', allow "Update Order Status" feature --}} {{-- Accessing Specific Guard Instances: https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances --}} {{-- Retrieving The Authenticated User: https://laravel.com/docs/9.x/authentication#retrieving-the-authenticated-user --}}
+                            
+                            @if (Auth::guard('admin')->user()->type != 'vendor')   
 
-                                {{-- Note: The `order_statuses` table contains all kinds of order statuses (that can be updated by 'admin'-s ONLY in `orders` table) like: pending, in progress, shipped, canceled, ...etc. In `order_statuses` table, the `name` column can be: 'New', 'Pending', 'Canceled', 'In Progress', 'Shipped', 'Partially Shipped', 'Delivered', 'Partially Delivered' and 'Paid'. 'Partially Shipped': If one order has products from different vendors, and one vendor has shipped their product to the customer while other vendor (or vendors) didn't!. 'Partially Delivered': if one order has products from different vendors, and one vendor has shipped and DELIVERED their product to the customer while other vendor (or vendors) didn't!    // The `order_item_statuses` table contains all kinds of order statuses (that can be updated by both 'vendor'-s and 'admin'-s in `orders_products` table) like: pending, in progress, shipped, canceled, ...etc. --}}
-                                <form action="{{ url('admin/update-order-status') }}" method="post">  {{-- determined by 'admin'-s ONLY, not 'vendor'-s. This is in contrast to 'Order Item Status' which can be updated by both 'vendor'-s and 'admin'-s --}}
-                                    @csrf {{-- Preventing CSRF Requests: https://laravel.com/docs/9.x/csrf#preventing-csrf-requests --}}
+                                
+                                <form action="{{ url('admin/update-order-status') }}" method="post">  
+                                    @csrf 
 
                                     <input type="hidden" name="order_id" value="{{ $orderDetails['id'] }}">
 
@@ -255,15 +253,15 @@
                                         @endforeach
                                     </select>
 
-                                    {{-- // Note: There are two types of Shipping Process: "manual" and "automatic". "Manual" is in the case like small businesses, where the courier arrives at the owner warehouse to to pick up the order for shipping, and the small business owner takes the shipment details (like courier name, tracking number, ...) from the courier, and inserts those details themselves in the Admin Panel when they "Update Order Status" Section (by an 'admin') or "Update Item Status" Section (by a 'vendor' or 'admin') (in admin/orders/order_details.blade.php). With "automatic" shipping process, we're integrating third-party APIs and orders go directly to the shipping partner, and the updates comes from the courier's end, and orders are automatically delivered to customers --}}
-                                    <input type="text" name="courier_name"    id="courier_name"    placeholder="Tên đơn vị vận chuyển">    {{-- This input field will only show up when 'Shipped' <option> is selected. Check admin/js/custom.js --}}
-                                    <input type="text" name="tracking_number" id="tracking_number" placeholder="Mã vận đơn"> {{-- This input field will only show up when 'Shipped' <option> is selected. Check admin/js/custom.js --}}
+                                    
+                                    <input type="text" name="courier_name"    id="courier_name"    placeholder="Tên đơn vị vận chuyển">    
+                                    <input type="text" name="tracking_number" id="tracking_number" placeholder="Mã vận đơn"> 
 
                                     <button type="submit">Cập nhật</button>
                                 </form>
                                 <br>
 
-                                {{-- Show the "Update Order Status" History/Log in admin/orders/order_details.blade.php     --}}
+                                
                                 @foreach ($orderLog as $key => $log)
                                     @php
                                         // echo '<pre>', var_dump($log), '</pre>';
@@ -275,15 +273,15 @@
 
                                     <strong>{{ $log['order_status'] }}</strong>
 
-                                    {{-- Shiprocket API integration --}}
-                                    @if ($orderDetails['is_pushed'] == 1) {{-- If the Order has been pushed to Shiprocket, state this --}}
+                                    
+                                    @if ($orderDetails['is_pushed'] == 1) 
                                         <span style="color: green">(Đơn hàng đã đẩy sang Shiprocket)</span>
                                     @endif
 
-                                    {{-- Note: There are two types of Shipping Process: "manual" and "automatic". "Manual" is in the case like small businesses, where the courier arrives at the owner warehouse to to pick up the order for shipping, and the small business owner takes the shipment details (like courier name, tracking number, ...) from the courier, and inserts those details themselves in the Admin Panel when they "Update Order Status" Section (by an 'admin') or "Update Item Status" Section (by a 'vendor' or 'admin') (in admin/orders/order_details.blade.php). With "automatic" shipping process, we're integrating third-party APIs and orders go directly to the shipping partner, and the updates comes from the courier's end, and orders are automatically delivered to customers --}}
+                                    
 
-                                    {{-- Show if the order status previewed in "Update Order Status" Section in admin/orders/order_details.blade.php is whether updated from "Update Item Status" Section (which can updated by either `vendor`-s or `admin`-s) (in case the `order_item_id` column is NOT zero 0 (it is 0 zero in case of updated by `admin`-s only in the "Update Order Status" Section)) or from "Update Order Status" Section (can be updated by `admin`-s ONLY). Check updateOrderItemStatus() method in Admin/OrderController.php     --}}
-                                    @if (isset($log['order_item_id']) && $log['order_item_id'] > 0) {{-- In case the "Item Status" Section is updated by a 'vendor' or 'admin', the `order_item_id` column in `orders_logs` table references (is a foreign key to) the `id` column in `orders_products` table, otherwise, it takes 0 zero as a value (in case of 'admin'). Check updateOrderItemStatus() method in Admin/OrderController.php --}}
+                                    
+                                    @if (isset($log['order_item_id']) && $log['order_item_id'] > 0) 
                                         @php
                                             $getItemDetails = \App\Models\OrdersLog::getItemDetails($log['order_item_id']);
                                         @endphp
@@ -307,7 +305,7 @@
                                     <hr>
                                 @endforeach
 
-                            @else {{-- If the authenticated/logged-in user is 'vendor', restrict the "Update Order Status" feature --}}
+                            @else 
                                 Tính năng này bị hạn chế.
                             @endif
 
@@ -322,7 +320,7 @@
                             <h4 class="card-title">Sản phẩm đã đặt</h4>
 
                             <div class="table-responsive">
-                                {{-- Order products info table --}}
+                                
                                 <table class="table table-striped table-borderless">
                                     <tr class="table-danger">
                                         <th>Ảnh sản phẩm</th>
@@ -335,17 +333,17 @@
                                         <th>Thành tiền</th>
 
 
-                                        @if (\Illuminate\Support\Facades\Auth::guard('admin')->user()->type != 'vendor') {{-- If the authenticated/logged-in user is an 'admin', 'superadmin' or 'subadmin', NOT 'vendor' --}} {{-- Accessing Specific Guard Instances: https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances --}}
+                                        @if (\Illuminate\Support\Facades\Auth::guard('admin')->user()->type != 'vendor')  
                                             <th>Sản phẩm của</th>
                                         @endif
 
 
 
-                                        <th>Hoa hồng</th> {{-- Vendor's Commission percentage must be paid on every product sold to the Website Owner --}}
-                                        <th>Số tiền thực nhận</th> {{-- Vendor's profit after paying (deducting) the Commission percentage --}}
+                                        <th>Hoa hồng</th> 
+                                        <th>Số tiền thực nhận</th> 
 
-                                        <th>Trạng thái sản phẩm</th> {{-- can be updated by both 'vendor'-s and 'admin'-s. This is in contrast to 'Update Order Status' which can be updated by 'admin'-s ONLY --}}
-                                        {{-- Note: The `order_statuses` table contains all kinds of order statuses (that can be updated by 'admin'-s ONLY in `orders` table) like: pending, in progress, shipped, canceled, ...etc. In `order_statuses` table, the `name` column can be: 'New', 'Pending', 'Canceled', 'In Progress', 'Shipped', 'Partially Shipped', 'Delivered', 'Partially Delivered' and 'Paid'. 'Partially Shipped': If one order has products from different vendors, and one vendor has shipped their product to the customer while other vendor (or vendors) didn't!. 'Partially Delivered': if one order has products from different vendors, and one vendor has shipped and DELIVERED their product to the customer while other vendor (or vendors) didn't!    // The `order_item_statuses` table contains all kinds of order statuses (that can be updated by both 'vendor'-s and 'admin'-s in `orders_products` table) like: pending, in progress, shipped, canceled, ...etc. --}}
+                                        <th>Trạng thái sản phẩm</th> 
+                                        
                                     </tr>
 
                                     @foreach ($orderDetails['orders_products'] as $product)
@@ -367,33 +365,33 @@
                                             <td>{{ $product['product_qty'] }}</td>
                                             <td>
 
-                                                @if ($product['vendor_id'] > 0) {{-- if the product belongs to a 'vendor', not 'admin' --}}
+                                                @if ($product['vendor_id'] > 0) 
 
 
-                                                    @if ($orderDetails['coupon_amount'] > 0) {{-- If there's a Coupon Code used --}}
+                                                    @if ($orderDetails['coupon_amount'] > 0) 
 
-                                                        @if (\App\Models\Coupon::couponDetails($orderDetails['coupon_code'])['vendor_id'] > 0) {{-- if a Coupon Code has been used, and this Coupon Code belongs to a 'vendor', not 'admin' (Because in `coupons` table, if the `vendor_id` column is 1 one, this means that the Coupon Code is added by a 'vendor', not 'admin', and if the `vendor_id` column is 0 zero, this means that the Coupon Code is added by an 'admin', not 'vendor') --}}
+                                                        @if (\App\Models\Coupon::couponDetails($orderDetails['coupon_code'])['vendor_id'] > 0) 
                                                             @php
                                                                 // dd(\App\Models\Coupon::couponDetails($orderDetails['coupon_code'])['vendor_id']);
                                                             @endphp
 
                                                         {{ $total_price = ($product['product_price'] * $product['product_qty']) - $item_discount }}
-                                                        @else {{-- if a Coupon Code has been used, and this Coupon Code belongs to an 'admin', not 'vendor' (Because in `coupons` table, if the `vendor_id` column is 1 one, this means that the Coupon Code is added by a 'vendor', not 'admin', and if the `vendor_id` column is 0 zero, this means that the Coupon Code is added by an 'admin', not 'vendor') --}}
+                                                        @else 
                                                             {{ $total_price = $product['product_price'] * $product['product_qty'] }}
                                                         @endif
 
-                                                    @else {{-- If there isn't a Coupon Code used --}}
+                                                    @else 
                                                         {{ $total_price = $product['product_price'] * $product['product_qty'] }}
                                                     @endif
 
-                                                @else {{-- if the product belongs to an 'admin', not 'vendor' --}}
+                                                @else 
                                                     {{ $total_price = $product['product_price'] * $product['product_qty'] }}
                                                 @endif
-                                            </td> {{-- Total Price = Unit Price * Quantity --}}
+                                            </td> 
 
 
-                                            @if (\Illuminate\Support\Facades\Auth::guard('admin')->user()->type != 'vendor') {{-- If the authenticated/logged-in user is an 'admin', 'superadmin' or 'subadmin', NOT 'vendor' --}} {{-- Accessing Specific Guard Instances: https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances --}}
-                                                @if ($product['vendor_id'] > 0) {{-- if the product belongs to a 'vendor' --}}
+                                            @if (\Illuminate\Support\Facades\Auth::guard('admin')->user()->type != 'vendor')  
+                                                @if ($product['vendor_id'] > 0) 
                                                     <td>
                                                         <a href="/admin/view-vendor-details/{{ $product['admin_id'] }}" target="_blank">Nhà bán</a>
                                                     </td>
@@ -404,7 +402,7 @@
 
 
 
-                                            @if ($product['vendor_id'] > 0) {{-- if the product belongs to a 'vendor' --}}
+                                            @if ($product['vendor_id'] > 0) 
                                                 <td>{{ $commission = round($total_price * $product['commission'] / 100, 2) }}</td>
                                                 <td>{{ $total_price - $commission }}</td>
                                             @else
@@ -415,9 +413,9 @@
 
                                             <td>
 
-                                                {{-- Note: The `order_statuses` table contains all kinds of order statuses (that can be updated by 'admin'-s ONLY in `orders` table) like: pending, in progress, shipped, canceled, ...etc. In `order_statuses` table, the `name` column can be: 'New', 'Pending', 'Canceled', 'In Progress', 'Shipped', 'Partially Shipped', 'Delivered', 'Partially Delivered' and 'Paid'. 'Partially Shipped': If one order has products from different vendors, and one vendor has shipped their product to the customer while other vendor (or vendors) didn't!. 'Partially Delivered': if one order has products from different vendors, and one vendor has shipped and DELIVERED their product to the customer while other vendor (or vendors) didn't!    // The `order_item_statuses` table contains all kinds of order statuses (that can be updated by both 'vendor'-s and 'admin'-s in `orders_products` table) like: pending, in progress, shipped, canceled, ...etc. --}}
-                                                <form action="{{ url('admin/update-order-item-status') }}" method="post">  {{-- can be updated by both 'vendor'-s and 'admin'-s. This is in contrast to 'Update Order Status' which can be updated by 'admin'-s ONLY --}}
-                                                    @csrf {{-- Preventing CSRF Requests: https://laravel.com/docs/9.x/csrf#preventing-csrf-requests --}}
+                                                
+                                                <form action="{{ url('admin/update-order-item-status') }}" method="post">  
+                                                    @csrf 
 
                                                     <input type="hidden" name="order_item_id" value="{{ $product['id'] }}">
 
@@ -428,9 +426,9 @@
                                                         @endforeach
                                                     </select>
 
-                                                    {{-- // Note: There are two types of Shipping Process: "manual" and "automatic". "Manual" is in the case like small businesses, where the courier arrives at the owner warehouse to to pick up the order for shipping, and the small business owner takes the shipment details (like courier name, tracking number, ...) from the courier, and inserts those details themselves in the Admin Panel when they "Update Order Status" Section (by an 'admin') or "Update Item Status" Section (by a 'vendor' or 'admin') (in admin/orders/order_details.blade.php). With "automatic" shipping process, we're integrating third-party APIs and orders go directly to the shipping partner, and the updates comes from the courier's end, and orders are automatically delivered to customers --}}
-                                                    <input style="width: 110px" type="text" name="item_courier_name"    id="item_courier_name"    placeholder="Tên vận chuyển"    @if (!empty($product['courier_name']))    value="{{ $product['courier_name'] }}"    @endif> {{-- This input field will only show up when 'Shipped' <option> is selected. Check admin/js/custom.js --}}
-                                                    <input style="width: 110px" type="text" name="item_tracking_number" id="item_tracking_number" placeholder="Mã vận đơn" @if (!empty($product['tracking_number'])) value="{{ $product['tracking_number'] }}" @endif> {{-- This input field will only show up when 'Shipped' <option> is selected. Check admin/js/custom.js --}}
+                                                    
+                                                    <input style="width: 110px" type="text" name="item_courier_name"    id="item_courier_name"    placeholder="Tên vận chuyển"    @if (!empty($product['courier_name']))    value="{{ $product['courier_name'] }}"    @endif> 
+                                                    <input style="width: 110px" type="text" name="item_tracking_number" id="item_tracking_number" placeholder="Mã vận đơn" @if (!empty($product['tracking_number'])) value="{{ $product['tracking_number'] }}" @endif> 
 
                                                     <button type="submit">Cập nhật</button>
                                                 </form>

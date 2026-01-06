@@ -2,170 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
 use App\Models\Conversation;
 use App\Models\Message;
-use App\Events\MessageSent;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
-    // ==================================================================
-    // 1. USER TRUY CẬP CHAT (khách hàng mở trang chat)
-    // ==================================================================
+    // ===== USER =====
     public function index()
     {
-        try {
-            if (!Auth::check()) {
-                return view('chat.index', [
-                    'conversation' => null,
-                    'messages'     => [],
-                    'adminError'   => false
-                ]);
-            }
+        $userId = Auth::id();
 
-            $admin = Admin::where('type', 'superadmin')->first();
-            if (!$admin) {
-                Log::error('Không tìm thấy superadmin');
-                return view('chat.index', ['conversation' => null, 'messages' => [], 'adminError' => true]);
-            }
-
-            $conversation = Conversation::firstOrCreate([
-                'user_id'  => Auth::id(),
-                'admin_id' => $admin->id
-            ]);
-
-            $messages = $conversation->messages()
-                ->with('sender')
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            // Mark as read for user
-            $messages->where('sender_type', '!=', \App\Models\User::class)->update(['is_read' => true]);
-
-            return view('chat.index', compact('conversation', 'messages'));
-        } catch (\Exception $e) {
-            Log::error('Chat index error: ' . $e->getMessage());
-            return view('chat.index', ['conversation' => null, 'messages' => [], 'error' => true]);
+        $admin = Admin::first();
+        if (!$admin) {
+            abort(500, 'No admin found.');
         }
-    }
 
-    // ==================================================================
-    // 2. ADMIN TRUY CẬP TRANG CHAT (trang chính /admin/chat)
-    // ==================================================================
-    public function adminIndex()
-    {
-        // LẤY TẤT CẢ CONVERSATION MÀ admin_id = ID admin hiện tại đang login
-        $conversations = Conversation::with(['user', 'latestMessage'])
-            ->where('admin_id', auth('admin')->id())
-            ->orderByDesc('updated_at')
+        $conversation = Conversation::firstOrCreate([
+            'user_id'  => $userId,
+            'admin_id' => $admin->id,
+        ]);
+
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->orderBy('id', 'asc')
             ->get();
 
-        // Nếu chưa có conversation nào thì hiển thị trống
+        // Mark admin -> user messages as read
+        Message::where('conversation_id', $conversation->id)
+            ->where('sender_type', Admin::class)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return view('chat.index', compact('conversation', 'messages'));
+    }
+
+    // ===== ADMIN =====
+    public function adminIndex()
+    {
+        $conversations = Conversation::with(['user', 'latestMessage'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
         $selectedConversation = $conversations->first();
         $messages = collect();
 
         if ($selectedConversation) {
-            $messages = Message::where('conversation_id', $selectedConversation->id)
+            $messages = $selectedConversation->messages()
                 ->with('sender')
-                ->orderBy('created_at', 'asc')
+                ->orderBy('id', 'asc')
                 ->get();
 
-            // Mark as read for admin
-            //$messages->where('sender_type', '!=', \App\Models\Admin::class)->update(['is_read' => true]);
+            // Mark user -> admin messages as read
+            Message::where('conversation_id', $selectedConversation->id)
+                ->where('sender_type', User::class)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
         }
 
         return view('admin.chat.index', compact('conversations', 'selectedConversation', 'messages'));
     }
 
-    // ==================================================================
-    // 3. ADMIN XEM CHI TIẾT 1 CUỘC TRÒ CHUYỆN (AJAX)
-    // ==================================================================
-    public function adminShowConversation($id)
+    public function adminShowConversation($conversationId)
     {
-        $conversation = Conversation::with(['user', 'messages.sender'])
-            ->where('id', $id)
-            ->where('admin_id', auth('admin')->id()) // BẮT BUỘC PHẢI LÀ ADMIN NÀY
-            ->firstOrFail();
+        $conversation = Conversation::with('user')->findOrFail($conversationId);
 
-        // Mark as read
-        $conversation->messages->where('sender_type', '!=', \App\Models\Admin::class)->update(['is_read' => true]);
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->orderBy('id', 'asc')
+            ->get();
 
-        return view('admin.chat.conversation_detail', [
-            'conversation' => $conversation,
-            'messages'     => $conversation->messages
-        ]);
+        // Mark user -> admin messages as read
+        Message::where('conversation_id', $conversation->id)
+            ->where('sender_type', User::class)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return view('admin.chat.conversation_detail', compact('conversation', 'messages'));
     }
 
-    // ==================================================================
-    // 4. GỬI TIN NHẮN (dùng chung user & admin)
-    // ==================================================================
     public function sendMessage(Request $request)
     {
-        $request->validate([
-            'message'         => 'required|string|max:1000',
-            'conversation_id' => 'nullable|integer|exists:conversations,id',
-        ]);
-
         try {
-            // XÁC ĐỊNH RÕ REQUEST ĐI TỪ ĐÂU
-            $isAdminRoute = $request->is('admin/*'); // /admin/chat/send thì true
+            $request->validate([
+                'conversation_id' => 'required|exists:conversations,id',
+                'message' => 'required|string|max:2000',
+            ]);
+
+            $conversation = Conversation::findOrFail($request->conversation_id);
+
+            // Nhận diện đang gửi từ admin route hay user route
+            $isAdminRoute = $request->is('admin/*') || $request->routeIs('admin.*');
 
             if ($isAdminRoute) {
-                // ĐANG Ở KHU VỰC ADMIN
-                if (!auth('admin')->check()) {
-                    return response()->json(['error' => 'Unauthorized'], 401);
-                }
-                $senderId   = auth('admin')->id();
+                // ADMIN gửi: luôn trỏ về admins (ưu tiên guard admin, fallback về conversation->admin_id)
                 $senderType = \App\Models\Admin::class;
+                $senderId   = auth('admin')->id() ?: (int) $conversation->admin_id;
+
+                // Chặn gửi sai hội thoại (phòng trường hợp giả conversation_id)
+                if ((int) $conversation->admin_id !== (int) $senderId) {
+                    return response()->json(['error' => 'Forbidden'], 403);
+                }
             } else {
-                // FRONTEND USER
-                if (!Auth::check()) {
+                // USER gửi: trỏ về users
+                if (!auth('web')->check()) {
                     return response()->json(['error' => 'Unauthorized'], 401);
                 }
-                $senderId   = Auth::id();
+
                 $senderType = \App\Models\User::class;
-            }
+                $senderId   = (int) auth('web')->id();
 
-            $conversation = null;
-
-            // Nếu client gửi kèm conversation_id thì lấy ra
-            if ($request->filled('conversation_id')) {
-                $conversation = Conversation::find($request->conversation_id);
-            }
-
-            // ===== TRƯỜNG HỢP USER GỬI LẦN ĐẦU (CHƯA CÓ CONVERSATION) =====
-            if (!$conversation && !$isAdminRoute) {
-                $superAdmin = Admin::where('type', 'superadmin')->first()
-                            ?? Admin::first();
-
-                if (!$superAdmin) {
-                    return response()->json(['error' => 'Không có admin nào trong hệ thống'], 500);
+                if ((int) $conversation->user_id !== (int) $senderId) {
+                    return response()->json(['error' => 'Forbidden'], 403);
                 }
-
-                $conversation = Conversation::firstOrCreate(
-                    ['user_id'  => $senderId],
-                    ['admin_id' => $superAdmin->id]
-                );
             }
 
-            // ===== TRƯỜNG HỢP ADMIN GỬI MÀ KHÔNG CÓ CONVERSATION =====
-            if (!$conversation && $isAdminRoute) {
-                return response()->json(['error' => 'Không tìm thấy cuộc trò chuyện'], 404);
-            }
-
-            // ===== KIỂM TRA QUYỀN =====
-            $allowed =
-                (!$isAdminRoute && $conversation->user_id  == $senderId) ||
-                ( $isAdminRoute && $conversation->admin_id == $senderId);
-
-            if (!$allowed) {
-                return response()->json(['error' => 'Bạn không có quyền gửi tin trong cuộc trò chuyện này'], 403);
-            }
-
-            // ===== TẠO MESSAGE =====
             $message = Message::create([
                 'conversation_id' => $conversation->id,
                 'sender_id'       => $senderId,
@@ -176,52 +131,64 @@ class ChatController extends Controller
 
             $conversation->touch();
 
-            // Broadcast event
-            broadcast(new MessageSent($message))->toOthers();
-
-            return response()->json([
-                'status'          => 'success',
-                'message'         => $message->load('sender'),
-                'conversation_id' => $conversation->id,
-                'updated_at'      => $conversation->updated_at,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Send message error: ' . $e->getMessage() . ' | Line: ' . $e->getLine());
+            return response()->json(['message' => $message], 200);
+        } catch (\Throwable $e) {
+            \Log::error('Send message error: ' . $e->getMessage());
             return response()->json(['error' => 'Server error'], 500);
         }
     }
 
-    // ==================================================================
-    // 5. LẤY TIN NHẮN (AJAX)
-    // ==================================================================
-    public function getMessages($conversationId)
+
+
+    // Polling endpoint (1s/lần), hỗ trợ since_id
+    public function getMessages(Request $request, $conversationId)
     {
-        try {
-            $conversation = Conversation::findOrFail($conversationId);
+        $conversation = Conversation::findOrFail($conversationId);
 
-            $userId  = Auth::id();
-            $adminId = auth('admin')->id();
+        $isAdminRoute = $request->is('admin/*') || $request->routeIs('admin.*');
 
-            if ($conversation->user_id !== $userId && $conversation->admin_id !== $adminId) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+        if ($isAdminRoute) {
+            // Admin đang xem: ưu tiên guard admin, fallback conversation->admin_id
+            $adminId = auth('admin')->id() ?: (int) $conversation->admin_id;
+
+            if ((int) $conversation->admin_id !== (int) $adminId) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
+        } else {
+            // User đang xem
+            if (!auth('web')->check()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
             }
 
-            $messages = $conversation->messages()
-                ->with('sender')
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            // Mark as read depending on who is requesting
-            if ($userId) {
-                $messages->where('sender_type', '!=', \App\Models\User::class)->update(['is_read' => true]);
-            } elseif ($adminId) {
-                $messages->where('sender_type', '!=', \App\Models\Admin::class)->update(['is_read' => true]);
+            $userId = (int) auth('web')->id();
+            if ((int) $conversation->user_id !== (int) $userId) {
+                return response()->json(['error' => 'Forbidden'], 403);
             }
-
-            return response()->json($messages);
-        } catch (\Exception $e) {
-            Log::error('Get messages error: ' . $e->getMessage());
-            return response()->json(['error' => 'Server error'], 500);
         }
+
+        $sinceId = (int) $request->query('since_id', 0);
+
+        $q = Message::where('conversation_id', $conversationId)
+            ->with('sender')
+            ->orderBy('id', 'asc');
+
+        if ($sinceId > 0) $q->where('id', '>', $sinceId);
+
+        $messages = $q->get();
+
+        // Mark read theo phía đối diện
+        if ($isAdminRoute) {
+            Message::where('conversation_id', $conversationId)
+                ->where('sender_type', \App\Models\User::class)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        } else {
+            Message::where('conversation_id', $conversationId)
+                ->where('sender_type', \App\Models\Admin::class)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+
+        return response()->json($messages);
     }
 }

@@ -7,13 +7,10 @@ use Illuminate\Database\Seeder;
 
 class RatingsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+        public function run(): void
     {
         
-        // Note: Check DatabaseSeeder.php!
+        
         $ratingRecords = [
             [
                 'id'         => 1,
@@ -33,7 +30,7 @@ class RatingsTableSeeder extends Seeder
             ]
         ];
 
-        // Note: Check DatabaseSeeder.php!
+        
         \App\Models\Rating::insert($ratingRecords);
     }
 }

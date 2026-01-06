@@ -1,8 +1,7 @@
-{{-- This page is 'include'-ed in front/products/checkout.blade.php, and will be used by jQuery AJAX to reload it, check front/js/custom.js --}}
 
 
-    <!-- Form-Fields /- -->
-    <h4 class="section-h4 deliveryText">Thêm địa chỉ giao hàng mới</h4> {{-- We created that deliveryText CSS class to use the HTML element as a handle for jQuery to change the <h4> content when clicking the Edit button --}}
+
+        <h4 class="section-h4 deliveryText">Thêm địa chỉ giao hàng mới</h4> 
     <div class="u-s-m-b-24">
         <input type="checkbox" class="check-box" id="ship-to-different-address" data-toggle="collapse" data-target="#showdifferent">
 
@@ -14,8 +13,7 @@
 
     </div>
     <div class="collapse" id="showdifferent">
-        <!-- Form-Fields -->
-
+        
         <form id="addressAddEditForm" action="javascript:;" method="post">
             @csrf
 
@@ -89,8 +87,7 @@
 
         </form>
 
-        <!-- Form-Fields /- -->
-
+        
     </div>
     <div>
         <label for="order-notes">Ghi chú đơn hàng</label>

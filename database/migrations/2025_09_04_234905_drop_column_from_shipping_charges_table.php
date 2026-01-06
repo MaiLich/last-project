@@ -6,21 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+        public function up(): void
     {
         Schema::table('shipping_charges', function (Blueprint $table) {
             
-            $table->dropColumn('rate'); // We drop the `rate` column in order to apply the 'Advanced' Shipping Charges module instead of the 'Simple' one
+            $table->dropColumn('rate'); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+        public function down(): void
     {
         Schema::table('shipping_charges', function (Blueprint $table) {
             

@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('vendors_business_details', function (Blueprint $table) {
             $table->id();
@@ -26,8 +21,8 @@ return new class extends Migration
             $table->string('shop_mobile')->nullable();
             $table->string('shop_website')->nullable();
             $table->string('shop_email')->nullable();
-            $table->string('address_proof')->nullable(); // vendor's personal address proof
-            $table->string('address_proof_image')->nullable(); // shop address proof
+            $table->string('address_proof')->nullable(); 
+            $table->string('address_proof_image')->nullable(); 
             $table->string('business_license_number')->nullable();
             $table->string('gst_number')->nullable();
             $table->string('pan_number')->nullable();
@@ -36,12 +31,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('vendors_business_details');
     }

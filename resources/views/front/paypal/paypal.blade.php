@@ -1,9 +1,8 @@
-{{-- This page is rendered by paypal() method inside Front/PaypalController.php --}}
+
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Giỏ hàng</h2>
@@ -19,8 +18,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Cart-Page -->
+        <!-- Cart-Page -->
     <div class="page-cart u-s-p-t-80">
         <div class="container">
             <div class="row">

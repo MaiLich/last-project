@@ -7,15 +7,10 @@ use Illuminate\Database\Seeder;
 
 class VendorsBusinessDetailsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
         
-        // Note: Check DatabaseSeeder.php
+        
         $vendorsBusinessDetailsRecords = [
             [
                 'id'                      => 1,
@@ -36,7 +31,7 @@ class VendorsBusinessDetailsTableSeeder extends Seeder
                 'pan_number'              => '2135446',
             ],
         ];
-        // Note: Check DatabaseSeeder.php
+        
         \App\Models\VendorsBusinessDetail::insert($vendorsBusinessDetailsRecords);
     }
 }

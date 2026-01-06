@@ -1,4 +1,4 @@
-{{-- This page is accessed from Customer Login tab in the dropdown menu in the header (in front/layout/header.blade.php) --}} 
+ 
 @extends('front.layout.layout')
 
 @section('content')

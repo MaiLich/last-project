@@ -7,13 +7,10 @@ use Illuminate\Database\Seeder;
 
 class NewsletterSubscriberTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+        public function run(): void
     {
         
-        // Note: Check DatabaseSeeder.php!
+        
         $subscriberRecords = [
             [
                 'id'     => 1,
@@ -27,7 +24,7 @@ class NewsletterSubscriberTableSeeder extends Seeder
             ]
         ];
 
-        // Note: Check DatabaseSeeder.php!
+        
         \App\Models\NewsletterSubscriber::insert($subscriberRecords);
     }
 }

@@ -1,11 +1,10 @@
-{{-- Show all Vendor products page (when you click on a shop name in front/products/detail.blade.php) --}} 
-{{-- This view is returned from vendorListing() method in Front/ProductsController.php --}} 
+ 
+ 
 @extends('front.layout.layout')
 
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>{{ $getVendorShop }}</h2>
@@ -21,8 +20,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-
+    
     <!-- Shop-Page -->
     <div class="page-shop u-s-p-t-80">
         <div class="container">

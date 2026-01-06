@@ -1,10 +1,9 @@
-{{-- Note: This page (view) is rendered by the checkout() method in the Front/ProductsController.php --}}
+
 @extends('front.layout.layout')
 
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Thanh toán</h2>
@@ -20,12 +19,11 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Checkout-Page -->
+        <!-- Checkout-Page -->
     <div class="page-checkout u-s-p-t-80">
         <div class="container">
 
-            {{-- Showing the following HTML Form Validation Errors: (check checkout() method in Front/ProductsController.php) --}}
+            
             @if (Session::has('error_message'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Lỗi:</strong> {{ Session::get('error_message') }}
@@ -41,8 +39,7 @@
                     <div class="col-lg-12 col-md-12">
 
                         <div class="row">
-                            <!-- Billing-&-Shipping-Details -->
-                            <div class="col-lg-6" id="deliveryAddresses">
+                                <div class="col-lg-6" id="deliveryAddresses">
 
 
 
@@ -53,13 +50,11 @@
 
 
                             </div>
-                            <!-- Billing-&-Shipping-Details /- -->
-                            <!-- Checkout -->
-                            <div class="col-lg-6">
+                        <div class="col-lg-6">
 
 
 
-                                {{-- The complete HTML Form of the user submitting their Delivery Address and Payment Method --}}
+                                
                                 <form name="checkoutForm" id="checkoutForm" action="{{ url('/checkout') }}" method="post">
                                     @csrf
 
@@ -203,8 +198,7 @@
 
 
                             </div>
-                            <!-- Checkout /- -->
-                        </div>
+                                                    </div>
 
                     </div>
                 </div>

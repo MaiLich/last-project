@@ -7,15 +7,10 @@ use Illuminate\Database\Seeder;
 
 class DeliveryAddressTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
         
-        // Note: Check DatabaseSeeder.php!
+        
         $deliveryRecords = [
             [
                 'id'      => 1,
@@ -31,7 +26,7 @@ class DeliveryAddressTableSeeder extends Seeder
             ],
             [
                 'id'      => 2,
-                'user_id' => 1, // the same user_id in the previous record which means the the delivery address is for the same person
+                'user_id' => 1, 
                 'name'    => 'Ahmed Yahya',
                 'address' => '15 Fouaad St.',
                 'city'    => 'Alexandria',
@@ -43,7 +38,7 @@ class DeliveryAddressTableSeeder extends Seeder
             ],
         ];
 
-        // Note: Check DatabaseSeeder.php!
+        
         \App\Models\DeliveryAddress::insert($deliveryRecords);
     }
 }

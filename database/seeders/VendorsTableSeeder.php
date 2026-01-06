@@ -7,16 +7,11 @@ use Illuminate\Database\Seeder;
 
 class VendorsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
-        //
-        // Databas Seeding
-        // Note: Check DatabaseSeeder.php
+        
+        
+        
         $vendorRecords = [
             [
                 'id'      => 1,
@@ -32,7 +27,7 @@ class VendorsTableSeeder extends Seeder
             ],
         ];
 
-        // Note: Check DatabaseSeeder.php
+        
         \App\Models\Vendor::insert($vendorRecords);
     }
 }

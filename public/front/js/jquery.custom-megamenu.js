@@ -1,15 +1,4 @@
-/*!
- * Custom-MegaMenu v1.0.0
- *
- * Copyright (c)
- *  Ahmad Hussnain
 
- * MIT License
- */
-
-/*
- * A mega-menu which shows dropdowns when hovering over.
- */
 
 ;(function ($, window, document, undefined) {
     'use strict';

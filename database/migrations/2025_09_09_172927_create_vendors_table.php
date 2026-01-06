@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
@@ -24,19 +19,14 @@ return new class extends Migration
             $table->string('pincode')->nullable();
             $table->string('mobile');
             $table->string('email')->unique();
-            $table->enum('confirm', ['No', 'Yes']); // added later    // "No" is the default value    
-            $table->tinyInteger('status'); // active or not active (admins will approve the status of the vendor)
+            $table->enum('confirm', ['No', 'Yes']); 
+            $table->tinyInteger('status'); 
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('vendors');
     }

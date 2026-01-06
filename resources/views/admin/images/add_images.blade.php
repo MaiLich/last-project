@@ -7,7 +7,7 @@
                 <div class="col-md-12 grid-margin">
                     <div class="row">
                         <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                            <h4 class="card-title">Hình ảnh</h4> {{-- nghĩa là Hình ảnh sản phẩm --}}
+                            <h4 class="card-title">Hình ảnh</h4> 
                         </div>
                         <div class="col-12 col-xl-4">
                             <div class="justify-content-end d-flex">

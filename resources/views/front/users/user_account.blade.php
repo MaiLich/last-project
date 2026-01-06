@@ -1,4 +1,4 @@
-{{-- This page is accessed from My Account tab in the dropdown menu in the header (in front/layout/header.blade.php). Check userAccount() method in Front/UserController.php --}} 
+ 
 @extends('front.layout.layout')
 
 @section('content')
@@ -134,7 +134,7 @@
                 </div>
                 <!-- Update User Account Contact Details /- -->
 
-                <!-- Update User Password via AJAX --> 
+                <!-- Update User Password --> 
                 <div class="col-lg-6">
                     <div class="reg-wrapper">
                         <h2 class="account-h2 u-s-m-b-20" style="font-size: 18px">Đổi mật khẩu</h2>
@@ -172,7 +172,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Update User Password via AJAX /- -->
+                <!-- Update User Password  /- -->
 
             </div>
         </div>

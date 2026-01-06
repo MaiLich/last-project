@@ -7,15 +7,10 @@ use Illuminate\Database\Seeder;
 
 class CouponsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
         
-        // Note: Check DatabaseSeeder.php!
+        
         $couponRecords = [
             [
                 'id'            => 1,
@@ -23,11 +18,11 @@ class CouponsTableSeeder extends Seeder
                 'coupon_option' => 'Manual',
                 'coupon_code'   => 'test10',
                 'categories'    => 1,
-                'users'         => '', // empty string means coupon is for ALL users
+                'users'         => '', 
                 'coupon_type'   => 'Single Time',
                 'amount_type'   => 'Percentage',
                 'amount'        => 10,
-                'expiry_date'   => '2022-12-31', // MySQL date format Y-M-D
+                'expiry_date'   => '2022-12-31', 
                 'status'        => 1
             ],
             [
@@ -36,16 +31,16 @@ class CouponsTableSeeder extends Seeder
                 'coupon_option' => 'Manual',
                 'coupon_code'   => 'test20',
                 'categories'    => 1,
-                'users'         => '', // empty string means coupon is for ALL users
+                'users'         => '', 
                 'coupon_type'   => 'Single Time',
                 'amount_type'   => 'Percentage',
                 'amount'        => 20,
-                'expiry_date'   => '2022-12-31', // MySQL date format Y-M-D
+                'expiry_date'   => '2022-12-31', 
                 'status'        => 1
             ],
         ];
 
-        // Note: Check DatabaseSeeder.php!
+        
         \App\Models\Coupon::insert($couponRecords);
     }
 }

@@ -1,4 +1,3 @@
-{{-- This page is rendered by the thanks() method inside Front/ProductsController.php --}}
 @extends('front.layout.layout')
 
 @section('content')
@@ -26,7 +25,8 @@
             <div class="row">
                 <div class="col-lg-12" align="center">
                     <h3>ĐẶT HÀNG THÀNH CÔNG!</h3>
-                    <p>Mã đơn hàng của bạn là {{ Session::get('order_id') }} và tổng tiền thanh toán là  {{ Session::get('grand_total') }}đ</p>
+                    <p>Mã đơn hàng của bạn là {{ Session::get('order_id') }} và tổng tiền thanh toán là
+                        {{ Session::get('grand_total') }}đ</p>
                 </div>
             </div>
         </div>
@@ -34,12 +34,12 @@
     <!-- Cart-Page /- -->
 @endsection
 
-{{-- Forget/Remove some data in the Session after making/placing the order --}} 
+
 @php
     use Illuminate\Support\Facades\Session;
 
-    Session::forget('grand_total');  // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('order_id');     // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('couponCode');   // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('couponAmount'); // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
+    Session::forget('grand_total');  
+    Session::forget('order_id');     
+    Session::forget('couponCode');   
+    Session::forget('couponAmount'); 
 @endphp

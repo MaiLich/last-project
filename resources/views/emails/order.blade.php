@@ -1,4 +1,4 @@
-{{-- This is the user Placing Order Confirmation email file using Mailtrap --}} {{-- All the variables (like $name, $mobile, $email, ...) used here are passed in from the checkout() method in Front/ProductsController.php --}}
+ 
 
 
 
@@ -41,22 +41,22 @@
                     @endforeach
                         <tr>
                             <td colspan="5" align="right">Phí vận chuyển</td>
-                            <td>INR {{ $orderDetails['shipping_charges'] }}</td>
+                            <td> {{ $orderDetails['shipping_charges'] }}đ</td>
                         </tr>
                         <tr>
                             <td colspan="5" align="right">Giảm giá coupon</td>
                             <td>
-                                INR
+                                
                                 @if ($orderDetails['coupon_amount'] > 0)
-                                    {{ $orderDetails['coupon_amount'] }}
+                                    {{ $orderDetails['coupon_amount'] }}đ
                                 @else
-                                    0
+                                    0đ
                                 @endif
                             </td>
                         </tr>
                         <tr>
                             <td colspan="5" align="right">Tổng thanh toán</td>
-                            <td>INR {{ $orderDetails['grand_total'] }}</td>
+                            <td>{{ $orderDetails['grand_total'] }}đ</td>
                         </tr>
                 </table>    
             </td></tr>

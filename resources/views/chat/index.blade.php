@@ -27,67 +27,182 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded', function () {
+    let conversationId = {{ $conversation->id ?? 'null' }};
 
-window.conversationId = {{ isset($conversation) && $conversation ? $conversation->id : 'null' }};
+    const box = document.getElementById('chatbot-messages');
+    const input = document.getElementById('chatbot-input');
+    const sendBtn = document.getElementById('chatbot-send');
+    const csrf = document.getElementById('csrf-token')?.value;
 
-const box = document.getElementById('chatbot-messages');
-const input = document.getElementById('chatbot-input');
-const sendBtn = document.getElementById('chatbot-send');
-const csrf = document.getElementById('csrf-token').value;
+    if (!box || !input || !sendBtn) return;
 
-function scroll(){box.scrollTop = box.scrollHeight;}
+    let lastId = 0;
+    let sending = false;
+    let pollTimer = null;
 
-function render(text,type,time=null){
-    const el=document.createElement('div');
-    el.className='message '+type;
-    const t=time?new Date(time):new Date();
-    el.innerHTML=`${text}<div class="message-time">${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}</div>`;
-    box.appendChild(el);
-    scroll();
-}
+    // chống render trùng dù backend trả lại cùng message nhiều lần
+    let renderedIds = new Set();
 
-function load(){
-    if(!conversationId) return;
-    fetch('/chat/messages/'+conversationId)
-    .then(r=>r.json())
-    .then(data=>{
-        box.innerHTML='';
-        data.forEach(m=>{
-            render(m.message,m.sender_type==='App\\\\Models\\\\User'?'sent':'received',m.created_at);
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function fmtTime(iso) {
+        const d = iso ? new Date(iso) : new Date();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+    }
+
+    function normalizeSenderType(t) {
+        let s = String(t || '');
+        while (s.includes('\\\\')) s = s.replaceAll('\\\\', '\\');
+        return s;
+    }
+
+    function isUserMessage(msg) {
+        const tail = normalizeSenderType(msg?.sender_type).split('\\').pop();
+        return tail === 'User';
+    }
+
+    function scrollToBottom() {
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function renderMessage(msg) {
+        const idNum = Number(msg?.id || 0);
+        if (idNum > 0) {
+            if (renderedIds.has(idNum)) return;
+            renderedIds.add(idNum);
+        }
+
+        const isMe = isUserMessage(msg);
+        const wrap = document.createElement('div');
+        wrap.className = 'message ' + (isMe ? 'sent' : 'received');
+
+        wrap.innerHTML = `
+            <div>${escapeHtml(msg.message ?? '').replace(/\n/g,'<br>')}</div>
+            <div class="message-time">${fmtTime(msg.created_at)}</div>
+        `;
+
+        box.appendChild(wrap);
+
+        if (idNum > lastId) lastId = idNum;
+    }
+
+    async function fetchJson(url, options = {}) {
+        const res = await fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                ...(options.headers || {})
+            },
+            ...options
         });
-        scroll();
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+            const msg = data?.error || data?.message || `HTTP ${res.status}`;
+            throw new Error(msg);
+        }
+        return data;
+    }
+
+    async function loadAll() {
+        if (!conversationId) return;
+        const list = await fetchJson(`/chat/messages/${conversationId}?t=${Date.now()}`);
+
+        box.innerHTML = '';
+        lastId = 0;
+        renderedIds = new Set();
+
+        (list || []).forEach(renderMessage);
+        scrollToBottom();
+    }
+
+    async function loadNew() {
+        if (!conversationId) return;
+
+        const url = lastId
+            ? `/chat/messages/${conversationId}?since_id=${lastId}&t=${Date.now()}`
+            : `/chat/messages/${conversationId}?t=${Date.now()}`;
+
+        const list = await fetchJson(url);
+        let added = false;
+
+        (list || []).forEach(m => {
+            const before = lastId;
+            renderMessage(m);
+            if (lastId !== before) added = true;
+        });
+
+        if (added) scrollToBottom();
+    }
+
+    function stopPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(() => {
+            if (document.hidden) return;
+            if (sending) return; // tránh đua nhau khi đang gửi
+            loadNew().catch(() => {});
+        }, 1000);
+    }
+
+    async function send() {
+        const text = input.value.trim();
+        if (!text || sending) return;
+
+        sending = true;
+        sendBtn.disabled = true;
+
+        try {
+            const payload = { message: text, conversation_id: conversationId };
+
+            const data = await fetchJson('/chat/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf
+                },
+                body: JSON.stringify(payload)
+            });
+
+            input.value = '';
+
+            // nếu lần đầu tạo conversation
+            if (data?.conversation_id) conversationId = data.conversation_id;
+
+            //KHÔNG render ngay ở đây để tránh bị nhân đôi
+            await loadNew();
+        } catch (e) {
+            alert(e.message || 'Không gửi được tin nhắn');
+        } finally {
+            sending = false;
+            sendBtn.disabled = false;
+        }
+    }
+
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            send();
+        }
     });
-}
 
-function send(){
-    const msg=input.value.trim();
-    if(!msg) return;
-
-    render(msg,'sent');
-    input.value='';
-
-    fetch('/chat/send',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrf},
-        body:JSON.stringify({conversation_id:conversationId,message:msg})
-    })
-    .then(r=>r.json())
-    .then(d=>{ if(d.conversation_id) conversationId=d.conversation_id; });
-}
-
-sendBtn.onclick=send;
-input.addEventListener('keydown',e=>{if(e.key==='Enter') send();});
-
-load();
-
-if(window.Echo && conversationId){
-    window.Echo.private('chat.'+conversationId)
-        .listen('MessageSent',e=>{
-            render(e.message.message,'received',e.message.created_at);
-        });
-}
-
+    loadAll().catch(console.error);
+    startPolling();
 });
 </script>
 

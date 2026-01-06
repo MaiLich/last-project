@@ -1,6 +1,6 @@
 <?php
 
-// app/Http/Controllers/Front/BlogController.php
+
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
@@ -17,7 +17,7 @@ class BlogController extends Controller
         $post = BlogPost::published()->where('slug',$slug)
                 ->with(['author','comments'=>fn($q)=>$q->where('status','approved')->latest()])
                 ->firstOrFail();
-        // Bài liên quan (simple)
+        
         $related = BlogPost::published()->where('id','!=',$post->id)->latest('published_at')->take(4)->get();
         return view('front.blog.show', compact('post','related'));
     }

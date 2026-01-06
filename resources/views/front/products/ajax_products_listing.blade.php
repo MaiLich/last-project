@@ -1,5 +1,4 @@
-<!-- Row-of-Product-Container -->
-{{-- <div class="row product-container list-style"> --}}
+
 <div class="row product-container grid-style">
 
     @foreach ($categoryProducts as $product)
@@ -13,9 +12,9 @@
                             $product_image_path = 'front/images/product_images/small/' . $product['product_image'];
                         @endphp
 
-                        @if (!empty($product['product_image']) && file_exists($product_image_path)) {{-- if the product image exists in BOTH database table AND filesystem (on server) --}}
+                        @if (!empty($product['product_image']) && file_exists($product_image_path)) 
                             <img class="img-fluid" src="{{ asset($product_image_path) }}" alt="{{ $product['product_name'] }}">
-                        @else {{-- show the dummy image --}}
+                        @else 
                             <img class="img-fluid" src="{{ asset('front/images/product_images/small/no-image.png') }}" alt="Không có hình ảnh sản phẩm">
                         @endif
 
@@ -57,13 +56,13 @@
 
 
 
-                    {{-- Call the static getDiscountPrice() method in the Product.php Model to determine the final price of a product because a product can have a discount from TWO things: either a `CATEGORY` discount or `PRODUCT` discout     --}}
+                    
                     @php
                         $getDiscountPrice = \App\Models\Product::getDiscountPrice($product['id']);
                     @endphp
 
 
-                    @if ($getDiscountPrice > 0) {{-- If there's a discount on the price, show the price before (the original price) and after (the new price) the discount --}}
+                    @if ($getDiscountPrice > 0) 
                         <div class="price-template">
                             <div class="item-new-price">
                                 {{ $getDiscountPrice }}đ
@@ -72,7 +71,7 @@
                                 {{ $product['product_price'] }}đ
                             </div>
                         </div>
-                    @else {{-- if there's no discount on the price, show the original price --}}
+                    @else 
                         <div class="price-template">
                             <div class="item-new-price">
                                 {{ $product['product_price'] }}đ

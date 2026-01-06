@@ -1,4 +1,4 @@
-{{-- This page is accessed from Vendor Login tab in the drop-down menu in the header (in front/layout/header.blade.php) --}} 
+ 
 @extends('front.layout.layout')
 
 

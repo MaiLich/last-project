@@ -1,13 +1,11 @@
-{{-- Modal Popup --}} 
+ 
 
 
-<!-- Dummy Selectbox -->
 <div class="select-dummy-wrapper">
     <select id="compute-select">
         <option id="compute-option">Tất cả</option>
     </select>
 </div>
-<!-- Dummy Selectbox /- -->
 <!-- Responsive-Search -->
 <div class="responsive-search-wrapper">
     <button type="button" class="button ion ion-md-close" id="responsive-search-close-button"></button>
@@ -23,12 +21,10 @@
     </div>
 </div>
 <!-- Responsive-Search /- -->
-<!-- Newsletter-Modal -->
 
 
 
 
-<!-- Newsletter-Modal /- -->
 <!-- Quick-view-Modal -->
 <div id="quick-view" class="modal fade">
     <div class="modal-dialog modal-dialog-centered">

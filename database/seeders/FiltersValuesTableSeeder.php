@@ -7,19 +7,14 @@ use Illuminate\Database\Seeder;
 
 class FiltersValuesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
-        //
+        
 
 
 
         
-        // Note: Check DatabaseSeeder.php!
+        
         $filtervalueRecords = [
             [
                 'id'           => 1,
@@ -36,17 +31,17 @@ class FiltersValuesTableSeeder extends Seeder
             [
                 'id'           => 3,
                 'filter_id'    => 2,
-                'filter_value' => '4 GB', // 4gb RAM
+                'filter_value' => '4 GB', 
                 'status'       => 1,
             ],
             [
                 'id'           => 4,
                 'filter_id'    => 2,
-                'filter_value' => '8 GB', // 4gb RAM
+                'filter_value' => '8 GB', 
                 'status'       => 1,
             ],
         ];
-        // Note: Check DatabaseSeeder.php!
+        
         \App\Models\ProductsFiltersValue::insert($filtervalueRecords);
     }
 }

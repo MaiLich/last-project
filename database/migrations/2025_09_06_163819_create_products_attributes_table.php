@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('products_attributes', function (Blueprint $table) {
             $table->id();
@@ -20,19 +15,14 @@ return new class extends Migration
             $table->string('size');
             $table->float('price');
             $table->integer('stock');
-            $table->string('sku'); // Stock Keeping Unit (example: CW21001)    // SKU is similar to Product Code then - hyphen then the initial of the product size (e.g. 'RC001-S')
-            $table->tinyInteger('status'); // 0 means inactive/disabled, 1 means active/enabled
+            $table->string('sku'); 
+            $table->tinyInteger('status'); 
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('products_attributes');
     }

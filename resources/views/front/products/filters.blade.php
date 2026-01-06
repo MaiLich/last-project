@@ -1,16 +1,14 @@
-{{-- This is the filters sidebar which is included by 'listing.blade.php' --}}
+
 @php
     
-    $productFilters = \App\Models\ProductsFilter::productFilters(); // Get all the (enabled/active) Filters
+    $productFilters = \App\Models\ProductsFilter::productFilters(); 
     // dd($productFilters);
 @endphp
 
 
 
-<!-- Shop-Left-Side-Bar-Wrapper -->
 <div class="col-lg-3 col-md-3 col-sm-12">
-    <!-- Fetch-Categories-from-Root-Category  -->
-    <div class="fetch-categories">
+        <div class="fetch-categories">
         <h3 class="title-name">Danh mục sản phẩm</h3>
         <!-- Level 1 -->
         <h3 class="fetch-mark-category">
@@ -51,11 +49,10 @@
         </ul>
         <!-- //end Level 2 -->
     </div>
-    <!-- Fetch-Categories-from-Root-Category  /- -->
+    
 
 
-
-    {{-- If the Search Form is not used for searching in front/layout/header.blade.php. Note that Filters will be hidden and won't work in case of using the Search Form --}} 
+     
     @if (!isset($_REQUEST['search']))
 
         <!-- Filters -->

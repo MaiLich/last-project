@@ -7,16 +7,11 @@ use Illuminate\Database\Seeder;
 
 class VendorsBankDetailsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
 
         
-        // Note: Check DatabaseSeeder.php
+        
         $vendorsBankDetailsRecords = [
             [
                 'id'                  => 1,
@@ -27,7 +22,7 @@ class VendorsBankDetailsTableSeeder extends Seeder
                 'bank_ifsc_code'      => '36546655',
             ],
         ];
-        // Note: Check DatabaseSeeder.php
+        
         \App\Models\VendorsBankDetail::insert($vendorsBankDetailsRecords);
     }
 }

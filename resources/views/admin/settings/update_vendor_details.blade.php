@@ -32,7 +32,7 @@
 
 
             
-            @if ($slug == 'personal') {{-- $slug was passed from AdminController to view (using compact() method) --}}
+            @if ($slug == 'personal') 
                 <div class="row">
                     <div class="col-md-6 grid-margin stretch-card">
                         <div class="card">

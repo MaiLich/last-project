@@ -1,9 +1,7 @@
-{{-- This page is rendered by the error() method inside Front/PaypalController.php (if making the order PayPal payment fails) --}}
 @extends('front.layout.layout')
 
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
     <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
@@ -20,7 +18,6 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
     <!-- Cart-Page -->
     <div class="page-cart u-s-p-t-80">
         <div class="container">
@@ -37,7 +34,7 @@
 
 
 
-{{-- Forget/Remove some data in the Session after making the PayPal payment --}} 
+
 @php
     use Illuminate\Support\Facades\Session;
 

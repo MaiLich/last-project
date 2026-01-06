@@ -6,14 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
-        Schema::create('products_filters_values', function (Blueprint $table) { // this table has a relationship with `products_filters` table
+        Schema::create('products_filters_values', function (Blueprint $table) { 
             $table->id();
 
             $table->string('filter_id');
@@ -24,12 +19,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('products_filters_values');
     }

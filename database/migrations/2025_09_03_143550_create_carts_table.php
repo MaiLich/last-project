@@ -6,18 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('carts', function (Blueprint $table) { 
             $table->id();
 
             $table->string('session_id');
-            $table->integer('user_id')->nullable(); // to allow user to Add to Cart WITHOUT LOGIN, then later when user logins, we'll use their `user_id`
+            $table->integer('user_id')->nullable(); 
             $table->integer('product_id');
             $table->string('size');
             $table->integer('quantity');
@@ -26,12 +21,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('carts');
     }

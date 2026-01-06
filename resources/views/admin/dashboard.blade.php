@@ -8,12 +8,7 @@
                 <div class="col-md-12 grid-margin">
                     <div class="row">
                         <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                            <h3 class="font-weight-bold">Chào mừng {{ Auth::guard('admin')->user()->name }}</h3> {{--
-                            Accessing Specific Guard Instances:
-                            https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances --}}
-                            <!-- https://laravel.com/docs/9.x/authentication#retrieving-the-authenticated-user -->
-                            <!-- https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances -->
-                            <!-- https://laravel.com/docs/9.x/eloquent#retrieving-models -->
+                            <h3 class="font-weight-bold">Chào mừng {{ Auth::guard('admin')->user()->name }}</h3>
                             <h6 class="font-weight-normal mb-0">Tất cả hệ thống đang hoạt động ổn định!</h6>
                         </div>
                     </div>
@@ -257,7 +252,7 @@
             });
         </script>
         <script>
-            // ======== DỮ LIỆU TỪ BACKEND ========
+            // ========dữ liệu backend========
             const mostPurchased = {
                 labels: {!! json_encode($mostPurchased->pluck('product.product_name')) !!},
                 data: {!! json_encode($mostPurchased->pluck('total_qty')) !!}
@@ -271,7 +266,7 @@
                 data: {!! json_encode($mostInStock->pluck('total_stock')) !!}
             };
 
-            // ======== HÀM VẼ BIỂU ĐỒ CỘT ========
+            // ======== hàm vẽ biểu đồ cột========
             function renderBarChart(canvasId, chartData, label, color, isMoney = false) {
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 const maxValue = Math.max(...chartData.data);
@@ -356,7 +351,7 @@
                 });
             }
 
-            // ======== GỌI HÀM VẼ ========
+            // ======== gọi hàm về ========
             renderBarChart('mostPurchasedChart', mostPurchased, 'Số lượng mua', 'rgba(255, 99, 132, 0.6)');
             renderBarChart('bestSellingChart', bestSelling, 'Doanh thu (VNĐ)', 'rgba(54, 162, 235, 0.6)', true);
             renderBarChart('mostInStockChart', mostInStock, 'Số lượng tồn', 'rgba(255, 206, 86, 0.6)');

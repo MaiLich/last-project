@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Session;
 
 class BlogPostController extends Controller
 {
-    // index
+    
     public function index(){
         Session::put('page', 'blog');
         $posts = BlogPost::latest()->paginate(15);
@@ -28,14 +28,14 @@ class BlogPostController extends Controller
     public function store(StoreBlogPostRequest $request){
         $data = $request->validated();
 
-        // LẤY ID THEO GUARD admin
+        
         $data['author_id'] = Auth::guard('admin')->id();
 
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('blog','public');
             $data['thumbnail'] = $path;
 
-            // 👉 COPY sang public/storage/blog
+            
             $from = storage_path('app/public/'.$path);
             $to   = public_path('storage/'.$path);
 
@@ -62,7 +62,7 @@ class BlogPostController extends Controller
 
         if ($request->hasFile('thumbnail')) {
 
-            // xóa ảnh cũ (cả storage & public)
+            
             if ($post->thumbnail) {
                 Storage::disk('public')->delete($post->thumbnail);
                 @unlink(public_path('storage/'.$post->thumbnail));
@@ -71,7 +71,7 @@ class BlogPostController extends Controller
             $path = $request->file('thumbnail')->store('blog','public');
             $data['thumbnail'] = $path;
 
-            // 👉 COPY sang public/storage/blog
+            
             $from = storage_path('app/public/'.$path);
             $to   = public_path('storage/'.$path);
 
@@ -102,7 +102,7 @@ class BlogPostController extends Controller
         return back()->with('success','Status updated');
     }
 
-    // Duyệt comment nhanh trong admin
+    
     public function comments(BlogPost $post){
         Session::put('page', 'blog'); 
         $post->load(['comments.user']);

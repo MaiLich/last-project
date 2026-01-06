@@ -1,5 +1,5 @@
-{{-- User Forgot Password Functionality --}}
-{{-- This page is accessed from the <a> tag in front/users/login_register.blade.php --}}
+
+
 @extends('front.layout.layout')
 @section('content')
     <!-- Page Introduction Wrapper -->

@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
             
@@ -19,8 +14,8 @@ return new class extends Migration
 
             $table->integer('order_id');
             $table->integer('user_id');
-            $table->string('payment_id'); // comes from PayPal website    // 'string' data type because data may come as "alphanumeric" from PayPal website
-            $table->string('payer_id');   // comes from PayPal website    // 'string' data type because data may come as "alphanumeric" from PayPal website
+            $table->string('payment_id'); 
+            $table->string('payer_id');   
             $table->string('payer_email');
             $table->float('amount', 10, 2);
             $table->string('currency');
@@ -30,12 +25,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('payments');
     }

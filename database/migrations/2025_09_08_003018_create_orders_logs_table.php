@@ -6,30 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+        public function up()
     {
         Schema::create('orders_logs', function (Blueprint $table) {
             
             $table->id();
 
-            $table->integer('order_id'); // Foreign Key to the `id` column in `orders` table
+            $table->integer('order_id'); 
             $table->string('order_status');
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+        public function down()
     {
         Schema::dropIfExists('orders_logs');
     }

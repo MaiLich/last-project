@@ -1,5 +1,5 @@
-{{-- Note: front/products/detail.blade.php là trang được mở khi bạn nhấp vào một sản phẩm ở trang chủ FRONT --}}
-{{-- $productDetails, categoryDetails và $totalStock được truyền từ phương thức detail() trong Front/ProductsController.php --}}
+
+
 @extends('front.layout.layout')
 
 @section('content')
@@ -266,9 +266,7 @@
                             </div>
                         </form>
 
-                        <!-- <br><br><b>Giao hàng</b>
-                        <input type="text" id="pincode" placeholder="Nhập mã vùng giao hàng">
-                        <button type="button" id="checkPincode">Kiểm tra</button> -->
+                        
                     </div>
                 </div>
             </div>

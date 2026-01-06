@@ -11,7 +11,7 @@ class ShippingCharge extends Model
 
 
     
-    public static function getShippingCharges($total_weight , $country) { // this method is used inside checkout() method in Front/ProductsController.php
+    public static function getShippingCharges($total_weight , $country) { 
         $shippingDetails = ShippingCharge::where('country', $country)->first()->toArray(); 
 
         

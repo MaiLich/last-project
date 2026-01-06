@@ -1,4 +1,4 @@
-{{-- Note: listing.blade.php is the page (rendered by listing() method in Front/ProductsController.php) that opens when you click on a category in the FRONT home page --}}
+
 @extends('front.layout.layout')
 
 
@@ -33,7 +33,7 @@
                     </li>
 
 
-                    {{-- Breadcrumbs --}} 
+                     
                     @php echo $categoryDetails['breadcrumbs']; @endphp
 
 
@@ -45,7 +45,7 @@
 
 
 
-                {{-- Include the listing page sidebar (Products filters (size, color, ...)) --}}
+                
                 @include('front.products.filters')
 
 
@@ -57,7 +57,7 @@
 
 
 
-                        {{-- If the Search Form is not used for searching in front/layout/header.blade.php. Note that Filters will be hidden and won't work in case of using the Search Form --}} 
+                         
                         @if (!isset($_REQUEST['search']))
 
 

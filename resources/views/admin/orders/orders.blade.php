@@ -1,4 +1,4 @@
-{{-- This page is rendered by orders() method inside Admin/OrderController.php --}}
+
 @extends('admin.layout.layout')
 
 
@@ -12,8 +12,8 @@
                             <h4 class="card-title">Danh sách đơn hàng</h4>
 
                             <div class="table-responsive pt-3">
-                                {{-- DataTable --}}
-                                <table id="orders" class="table table-bordered"> {{-- using the id here for the DataTable --}}
+                                
+                                <table id="orders" class="table table-bordered"> 
                                     <thead>
                                         <tr>
                                             <th>Mã đơn hàng</th>
@@ -32,7 +32,7 @@
                                             // dd($orders); // check if the authenticated/logged-in user is 'vendor' (show ONLY orders of products belonging to them), or 'admin' (show ALL orders)
                                         @endphp
                                         @foreach ($orders as $order)
-                                            @if ($order['orders_products']) {{-- If the 'vendor' has ordered products (if a 'vendor' product has been ordered), show them. --}}
+                                            @if ($order['orders_products']) 
                                                 <tr>
                                                     <td>{{ $order['id'] }}</td>
                                                     <td>{{ date('Y-m-d h:i:s', strtotime($order['created_at'])) }}</td>
@@ -53,13 +53,13 @@
                                                         </a>
                                                         &nbsp;&nbsp;
 
-                                                        {{-- View HTML invoice --}}
+                                                        {{-- hóa đơn html --}}
                                                         <a title="Xem hóa đơn" href="{{ url('admin/orders/invoice/' . $order['id']) }}" target="_blank">
                                                             <i style="font-size: 25px" class="mdi mdi-printer"></i>
                                                         </a>
                                                         &nbsp;&nbsp;
 
-                                                        {{-- View PDF invoice --}}
+                                                        {{-- hóa đơn pdf--}}
                                                         <a title="In hóa đơn PDF" href="{{ url('admin/orders/invoice/pdf/' . $order['id']) }}" target="_blank">
                                                             <i style="font-size: 25px" class="mdi mdi-file-pdf"></i>
                                                         </a>
@@ -80,7 +80,7 @@
         <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
                 <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                    Bản quyền © 2022. Đã đăng ký bản quyền.
+                    Bản quyền © 2025. Đã đăng ký bản quyền.
                 </span>
             </div>
         </footer>

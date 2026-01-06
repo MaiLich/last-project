@@ -7,17 +7,12 @@ use Illuminate\Database\Seeder;
 
 class ProductsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+        public function run()
     {
-        //
+        
 
-        // Databas Seeding
-        // Note: Check DatabaseSeeder.php        
+        
+        
         $productRecords = [
             [
                 'id'               => 1,
@@ -47,7 +42,7 @@ class ProductsTableSeeder extends Seeder
                 'section_id'       => 1,
                 'category_id'      => 6,
                 'brand_id'         => 2,
-                'vendor_id'        => 0, // 0 means not a vendor
+                'vendor_id'        => 0, 
                 'admin_id'         => 1,
                 'admin_type'       => 'superadmin',
                 'product_name'     => 'Red Casual T-Shirt',
@@ -67,7 +62,7 @@ class ProductsTableSeeder extends Seeder
             ],
         ];
 
-        // Note: Check DatabaseSeeder.php
+        
         \App\Models\Product::insert($productRecords);
     }
 }

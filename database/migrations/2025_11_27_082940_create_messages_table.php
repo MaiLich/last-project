@@ -6,15 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+        public function up()
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('conversation_id');
-            $table->unsignedBigInteger('sender_id');  // ID người gửi (user hoặc admin)
+            $table->unsignedBigInteger('sender_id');  
             $table->text('message');
             $table->boolean('is_read')->default(false);
             $table->timestamps();
@@ -25,10 +22,7 @@ return new class extends Migration
     }
 
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+        public function down(): void
     {
         Schema::dropIfExists('messages');
     }

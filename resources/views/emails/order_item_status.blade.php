@@ -1,4 +1,4 @@
-{{-- This is the order "Update ITEM Status" by a 'vendor' or 'admin' email file using Mailtrap --}} {{-- All the variables (like $name, $mobile, $email, ...) used here are passed in from the updateOrderItemStatus() method in Admin/OrderController.php --}}
+ 
 
 
 

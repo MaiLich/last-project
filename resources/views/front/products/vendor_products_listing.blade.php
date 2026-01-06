@@ -1,7 +1,6 @@
-{{-- Show all Vendor products --}} {{-- This file is 'iclude'-ed in front/products/vendor_listing.blade.php --}} 
+  
 
 
-<!-- Row-of-Product-Container -->
 <div class="row product-container grid-style">
 
     @foreach ($vendorProducts as $product)
