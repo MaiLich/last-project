@@ -1,12 +1,11 @@
-{{-- This page is rendered by index() method in Front/IndexController.php --}}
+
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Main-Slider -->
-    <div class="default-height ph-item">
+        <div class="default-height ph-item">
         <div class="slider-main owl-carousel">
 
-            {{-- Show the banner dynamically depending on the Admin Panel choice --}} 
+             
             @foreach ($sliderBanners as $banner)
                 <div class="bg-image">
                     <div class="slide-content">

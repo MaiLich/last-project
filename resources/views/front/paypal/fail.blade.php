@@ -1,10 +1,9 @@
-{{-- This page is rendered by the error() method inside Front/PaypalController.php (if making the order PayPal payment fails) --}}
+
 @extends('front.layout.layout')
 
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Giỏ hàng</h2>
@@ -20,9 +19,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Cart-Page -->
-    <div class="page-cart u-s-p-t-80">
+            <div class="page-cart u-s-p-t-80">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12" align="center">
@@ -32,17 +29,16 @@
             </div>
         </div>
     </div>
-    <!-- Cart-Page /- -->
-@endsection
+    @endsection
 
 
 
-{{-- Forget/Remove some data in the Session after making the PayPal payment --}} 
+ 
 @php
     use Illuminate\Support\Facades\Session;
 
-    Session::forget('grand_total');  // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('order_id');     // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('couponCode');   // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
-    Session::forget('couponAmount'); // Deleting Data: https://laravel.com/docs/9.x/session#deleting-data
+    Session::forget('grand_total');  
+    Session::forget('order_id');     
+    Session::forget('couponCode');   
+    Session::forget('couponAmount'); 
 @endphp

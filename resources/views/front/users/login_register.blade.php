@@ -1,8 +1,6 @@
-{{-- This page is accessed from Customer Login tab in the dropdown menu in the header (in front/layout/header.blade.php) --}} 
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
     <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
@@ -19,8 +17,6 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Account-Page -->
     <div class="page-account u-s-p-t-80">
         <div class="container">
 
@@ -28,7 +24,7 @@
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <strong>Thành công:</strong> {{ Session::get('success_message') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             @endif
@@ -37,7 +33,7 @@
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Lỗi:</strong> {{ Session::get('error_message') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             @endif
@@ -46,13 +42,12 @@
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Lỗi:</strong> @php echo implode('', $errors->all('<div>:message</div>')); @endphp
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             @endif
 
             <div class="row">
-                <!-- Login -->
                 <div class="col-lg-6">
                     <div class="login-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Đăng nhập</h2>
@@ -66,14 +61,16 @@
                                 <label for="user-email">Email
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="email" id="users-email" class="text-field" placeholder="Nhập email" name="email">
+                                <input type="email" id="users-email" class="text-field" placeholder="Nhập email"
+                                    name="email">
                                 <p id="login-email"></p>
                             </div>
                             <div class="u-s-m-b-30">
                                 <label for="user-password">Mật khẩu
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="password" id="users-password" class="text-field" placeholder="Nhập mật khẩu" name="password">
+                                <input type="password" id="users-password" class="text-field" placeholder="Nhập mật khẩu"
+                                    name="password">
                                 <p id="login-password"></p>
                             </div>
 
@@ -93,13 +90,12 @@
                         </form>
                     </div>
                 </div>
-                <!-- Login /- -->
 
-                <!-- Register -->
                 <div class="col-lg-6">
                     <div class="reg-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Đăng ký</h2>
-                        <h6 class="account-h6 u-s-m-b-30">Đăng ký tài khoản để theo dõi trạng thái đơn hàng và lịch sử mua sắm.</h6>
+                        <h6 class="account-h6 u-s-m-b-30">Đăng ký tài khoản để theo dõi trạng thái đơn hàng và lịch sử mua
+                            sắm.</h6>
 
                         <p id="register-success"></p>
 
@@ -110,28 +106,32 @@
                                 <label for="username">Họ và tên
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="text" id="user-name" class="text-field" placeholder="Nhập họ và tên" name="name">
+                                <input type="text" id="user-name" class="text-field" placeholder="Nhập họ và tên"
+                                    name="name">
                                 <p id="register-name"></p>
                             </div>
                             <div class="u-s-m-b-30">
                                 <label for="usermobile">Số điện thoại
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="text" id="user-mobile" class="text-field" placeholder="Nhập số điện thoại" name="mobile">
+                                <input type="text" id="user-mobile" class="text-field" placeholder="Nhập số điện thoại"
+                                    name="mobile">
                                 <p id="register-mobile"></p>
                             </div>
                             <div class="u-s-m-b-30">
                                 <label for="useremail">Email
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="email" id="user-email" class="text-field" placeholder="Nhập email" name="email">
+                                <input type="email" id="user-email" class="text-field" placeholder="Nhập email"
+                                    name="email">
                                 <p id="register-email"></p>
                             </div>
                             <div class="u-s-m-b-30">
                                 <label for="userpassword">Mật khẩu
                                     <span class="astk">*</span>
                                 </label>
-                                <input type="password" id="user-password" class="text-field" placeholder="Nhập mật khẩu" name="password">
+                                <input type="password" id="user-password" class="text-field" placeholder="Nhập mật khẩu"
+                                    name="password">
                                 <p id="register-password"></p>
                             </div>
                             <div class="u-s-m-b-30">
@@ -148,9 +148,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Register /- -->
             </div>
         </div>
     </div>
-    <!-- Account-Page /- -->
 @endsection

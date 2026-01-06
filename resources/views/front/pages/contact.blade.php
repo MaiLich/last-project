@@ -1,9 +1,8 @@
-{{-- This page is rendered by contact() method inside Front/CmsController.php --}}
+
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Liên hệ với chúng tôi</h2>
@@ -19,9 +18,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Contact-Page -->
-    <div class="page-contact u-s-p-t-80">
+            <div class="page-contact u-s-p-t-80">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12">
@@ -127,5 +124,4 @@
             <div id="map"></div>
         </div>
     </div>
-    <!-- Contact-Page /- -->
-@endsection
+    @endsection

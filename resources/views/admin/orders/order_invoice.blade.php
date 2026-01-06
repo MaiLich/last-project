@@ -1,11 +1,10 @@
-{{-- This is the HTML Order Invoice. This page is rendered by viewOrderInvoice() method inside Admin/OrderController.php --}}
+
 
 
 
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
 
 <div class="container">
     <div class="row">
@@ -15,7 +14,7 @@
                 <h3 class="pull-right">
                     Đơn hàng # {{ $orderDetails['id'] }}
 
-                    {{-- Laravel barcode/QR code generation package (to show barcodes/QR codes for both Product ID and Product Code): https://github.com/milon/barcode --}}
+                    
                     @php
                         echo DNS1D::getBarcodeHTML($orderDetails['id'], 'C39');       // This is the product `id` Barcode
                         // echo DNS2D::getBarcodeHTML($orderDetails['id'], 'QRCODE'); // This is the product `id` QR code
@@ -97,7 +96,7 @@
     						</thead>
     						<tbody>
 
-                                {{-- Calculate the Subtotal --}}
+                                
                                 @php
                                     $subTotal = 0;
                                 @endphp
@@ -107,7 +106,7 @@
                                         <td>
                                             {{ $product['product_code'] }}
 
-                                            {{-- Laravel barcode/QR code generation package (to show barcodes/QR codes for both Product ID and Product Code): https://github.com/milon/barcode --}}
+                                            
                                             @php
                                                 echo DNS1D::getBarcodeHTML($product['product_code'], 'C39');       // This is the product `product_code` Barcode
                                                 // echo DNS2D::getBarcodeHTML($product['product_code'], 'QRCODE'); // This is the product `product_code` QR code
@@ -120,7 +119,7 @@
                                         <td class="text-right">₫ {{ $product['product_price'] * $product['product_qty'] }}</td>
                                     </tr>
 
-                                    {{-- Continue: Calculate the Subtotal --}}
+                                    
                                     @php
                                         $subTotal = $subTotal + ($product['product_price'] * $product['product_qty'])
                                     @endphp

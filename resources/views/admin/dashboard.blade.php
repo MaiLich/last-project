@@ -8,19 +8,13 @@
                 <div class="col-md-12 grid-margin">
                     <div class="row">
                         <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                            <h3 class="font-weight-bold">Chào mừng {{ Auth::guard('admin')->user()->name }}</h3> {{--
-                            Accessing Specific Guard Instances:
-                            https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances --}}
-                            <!-- https://laravel.com/docs/9.x/authentication#retrieving-the-authenticated-user -->
-                            <!-- https://laravel.com/docs/9.x/authentication#accessing-specific-guard-instances -->
-                            <!-- https://laravel.com/docs/9.x/eloquent#retrieving-models -->
+                            <h3 class="font-weight-bold">Chào mừng {{ Auth::guard('admin')->user()->name }}</h3>
                             <h6 class="font-weight-normal mb-0">Tất cả hệ thống đang hoạt động ổn định!</h6>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <!-- Hàng 1 -->
                 <div class="col-md-3 stretch-card mb-4">
                     <div class="card card-light-danger h-100">
                         <div class="card-body text-center">
@@ -54,7 +48,6 @@
                     </div>
                 </div>
 
-                <!-- Hàng 2 -->
                 <div class="col-md-3 stretch-card mb-4">
                     <div class="card card-tale h-100">
                         <div class="card-body text-center">
@@ -88,7 +81,6 @@
                     </div>
                 </div>
 
-                <!-- Hàng 3 -->
                 <div class="col-md-3 stretch-card mb-4">
                     <div class="card card-light-warning h-100">
                         <div class="card-body text-center">
@@ -112,7 +104,6 @@
 
         </div>
         <div class="row mt-5">
-            <!-- Biểu đồ Doanh thu theo ngày -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -122,7 +113,6 @@
                 </div>
             </div>
 
-            <!-- Biểu đồ Doanh thu theo tháng -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -132,7 +122,6 @@
                 </div>
             </div>
 
-            <!-- Biểu đồ Doanh thu theo năm -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -144,7 +133,6 @@
         </div>
 
         <div class="row mt-5">
-            <!-- Sản phẩm được mua nhiều nhất -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -154,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- Sản phẩm bán chạy nhất -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -164,7 +151,6 @@
                 </div>
             </div>
 
-            <!-- Sản phẩm tồn kho nhiều nhất -->
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -178,10 +164,8 @@
 
 
 
-        <!-- Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        <!-- Đưa dữ liệu từ Controller sang JS -->
         <script>
             const revenueByDay = @json($revenueByDay);
             const revenueByMonth = @json($revenueByMonth);
@@ -365,8 +349,6 @@
 
 
 
-        <!-- content-wrapper ends -->
         @include('admin.layout.footer')
-        <!-- partial -->
     </div>
 @endsection

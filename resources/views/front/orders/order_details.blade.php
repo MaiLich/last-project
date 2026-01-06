@@ -1,9 +1,9 @@
-{{-- This page is rendered by orders() method inside Front/OrderController.php (depending on if the order id Optional Parameter (slug) is passed in or not) --}}
+
 @extends('front.layout.layout')
 
 @section('content')
 
-{{-- ⭐ CSS tổng thể --}}
+
 <style>
     body {
         background-color: #f8f9fa;
@@ -298,7 +298,7 @@
     </div>
 </div>
 
-{{-- ⭐ MODAL POPUP ĐÁNH GIÁ --}}
+{{-- MODAL POPUP ĐÁNH GIÁ --}}
 @foreach ($orderDetails['orders_products'] as $product)
 <div class="modal fade" id="ratingModal_{{ $product['product_id'] }}" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel_{{ $product['product_id'] }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

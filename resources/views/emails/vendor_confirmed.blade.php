@@ -1,4 +1,4 @@
-{{-- This is the vendor confirmation/registration Success Mail file using Mailtrap --}} {{-- All the variables (like $name, $mobile, $email, ...) used here are passed in from the vendorRegister() method in Front/VendorController.php --}}
+ 
 
 
 <!DOCTYPE html>

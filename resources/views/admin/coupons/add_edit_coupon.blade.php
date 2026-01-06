@@ -1,4 +1,4 @@
-{{-- Biến được truyền vào từ phương thức addEditCoupon() trong Admin/CouponsController --}}
+
 @extends('admin.layout.layout')
 
 @section('content')

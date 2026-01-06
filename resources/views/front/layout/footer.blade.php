@@ -1,30 +1,9 @@
-<!-- Footer -->
 <footer class="footer">
     <div class="container">
-        <!-- Outer-Footer -->
-        <div class="outer-footer-wrapper u-s-p-y-80">
-            <!-- <h6>
-                Để nhận các ưu đãi đặc biệt và thông tin giảm giá
-            </h6>
-            <h1>
-                Đăng ký nhận bản tin
-            </h1>
-            <p>
-                Đăng ký danh sách email để nhận thông tin cập nhật về khuyến mãi, sản phẩm mới, mã giảm giá và phiếu ưu đãi.
-            </p>
-
-            <form class="newsletter-form">
-                <label class="sr-only" for="subscriber_email">Nhập email của bạn</label>
-                <input type="text" placeholder="Địa chỉ Email của bạn" id="subscriber_email" name="subscriber_email" required> 
-                {{-- We'll use the HTML id Global Attribute in jQuery in front/js/custom.js --}} 
-                <button type="button" class="button" onclick="addSubscriber()">ĐĂNG KÝ</button> 
-                {{-- Check the addSubscriber() function in front/js/custom.js. We'll use it in conjunction with the id="subscriber_email" of the <input> field --}}
-            </form> -->
-
+                <div class="outer-footer-wrapper u-s-p-y-80">
+            
         </div>
-        <!-- Outer-Footer /- -->
-        <!-- Mid-Footer -->
-        <div class="mid-footer-wrapper u-s-p-b-80">
+                        <div class="mid-footer-wrapper u-s-p-b-80">
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <div class="footer-list">
@@ -96,9 +75,7 @@
                 </div>
             </div>
         </div>
-        <!-- Mid-Footer /- -->
-        <!-- Bottom-Footer -->
-        <div class="bottom-footer-wrapper">
+                        <div class="bottom-footer-wrapper">
             <div class="social-media-wrapper">
                 <ul class="social-media-list">
                     <li>
@@ -143,6 +120,5 @@
             </p>
         </div>
     </div>
-    <!-- Bottom-Footer /- -->
-</footer>
+    </footer>
 <!-- Footer /- -->

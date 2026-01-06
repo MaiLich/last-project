@@ -1,5 +1,5 @@
-{{-- User Confirmation Email after Registration --}}
-{{-- Variables ($name, $email, $code, ...) are passed from userRegister() in Front/UserController.php --}}
+
+
 
 <!DOCTYPE html>
 <html lang="vi">

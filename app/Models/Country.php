@@ -10,6 +10,6 @@ class Country extends Model
     use HasFactory;
 
 
-    // All world countries in the database `countries` table
+    
     
 }

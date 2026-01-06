@@ -1,6 +1,6 @@
-{{-- NOTE: FILE NÀY ĐƯỢC INCLUDE TRONG add_edit_category.blade.php (trong <div id="appendCategoriesLevel">) --}}
-{{-- Hiển thị danh sách <select> <option> danh mục phụ thuộc vào Nhóm danh mục đã chọn, sử dụng AJAX --}}
-{{-- File riêng biệt để CategoryController@appendCategoryLevel có thể trả về toàn bộ nội dung qua AJAX (xem admin/js/custom.js) --}}
+
+
+
 
 <div class="form-group">
     <label for="parent_id">Chọn cấp danh mục cha</label>

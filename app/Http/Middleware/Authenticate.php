@@ -15,10 +15,10 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            // return route('login');
+            
 
 
-            // Change the default route that the 'auth' middleware redirects unauthenticated/not logged in (logged out) users to    
+            
             redirect('user/login-register');
         }
     }

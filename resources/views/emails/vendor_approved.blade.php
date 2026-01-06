@@ -1,4 +1,4 @@
-{{-- This is the vendor Approval Success Mail file using Mailtrap --}} {{-- All the variables (like $name, $mobile, $email, ...) used here are passed in from the updateAdminStatus() method in Admin/AdminController.php --}}
+ 
 
 
 <!DOCTYPE html>

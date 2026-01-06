@@ -1,4 +1,4 @@
-{{-- This page is rendered by iyzipay() method inside Front/IyzipayController.php --}}
+
 
 
 @extends('front.layout.layout')
@@ -26,8 +26,7 @@
 
 
 
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Giỏ hàng</h2>
@@ -43,19 +42,16 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Cart-Page -->
-    <div class="page-cart u-s-p-t-80">
+            <div class="page-cart u-s-p-t-80">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12" align="center">
                     <h3>VUI LÒNG THANH TOÁN <span style="color: red">₫ {{ Session::get('grand_total') }}</span> CHO ĐƠN HÀNG CỦA BẠN</h3>
                     <a href="{{ url('iyzipay/pay') }}">
-                        <button class="button button2">Thanh toán ngay</button> {{-- Interacting With The Session: Retrieving Data: https://laravel.com/docs/9.x/session#retrieving-data --}}
+                        <button class="button button2">Thanh toán ngay</button> 
                     </a>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Cart-Page /- -->
-@endsection
+    @endsection

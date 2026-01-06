@@ -11,14 +11,14 @@ class Sms extends Model
 
 
 
-    // Sending an offline SMS using an SMS API
+    
     public static function sendSms($message, $mobile) {
         /*Code for SMS Script Starts*/
         $request ="";
         $param['authorization']="0fghGt7O6rJ1C8fsddpUXSEPLWv2aDRuMkyeif7mKBwNHxd4vw0gKcTfrhemqdsFS8gb6Do59Nzp1Ry5fi";
         $param['sender_id'] = 'FSTSMS';
         $param['message']= $message;
-        // $param['numbers']= '9800000000';
+        
         $param['numbers']= $mobile;
         $param['username']= 'Ahmed';
         $param['password']= '3212415445fsfgs5';

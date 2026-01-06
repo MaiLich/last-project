@@ -1,9 +1,8 @@
-{{-- User Forgot Password Functionality --}}
-{{-- This page is accessed from the <a> tag in front/users/login_register.blade.php --}}
+
+
 @extends('front.layout.layout')
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Tài khoản</h2>
@@ -19,9 +18,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Account-Page -->
-    <div class="page-account u-s-p-t-80">
+            <div class="page-account u-s-p-t-80">
         <div class="container">
             @if (Session::has('success_message'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -48,8 +45,7 @@
                 </div>
             @endif
             <div class="row">
-                <!-- Forgot Password -->
-                <div class="col-lg-6">
+                                <div class="col-lg-6">
                     <div class="login-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Quên mật khẩu?</h2>
                         <h6 class="account-h6 u-s-m-b-30">Nhập email của bạn để khôi phục mật khẩu.</h6>
@@ -80,9 +76,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Forgot Password /- -->
-                <!-- Register -->
-                <div class="col-lg-6">
+                                                <div class="col-lg-6">
                     <div class="reg-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Đăng ký</h2>
                         <h6 class="account-h6 u-s-m-b-30">Đăng ký tài khoản để theo dõi đơn hàng và lịch sử mua sắm.</h6>
@@ -132,9 +126,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Register /- -->
-            </div>
+                            </div>
         </div>
     </div>
-    <!-- Account-Page /- -->
-@endsection
+    @endsection

@@ -1,5 +1,5 @@
-{{-- This is the vendor Confirmation Mail file using Mailtrap --}} 
-{{-- All the variables (like $name, $code, ...) used here are passed in from the vendorRegister() method in Front/VendorController.php --}}
+ 
+
 
 
 <!DOCTYPE html>
@@ -14,8 +14,8 @@
             <tr><td>&nbsp;<br></td></tr>
             <tr><td>Vui lòng nhấp vào liên kết bên dưới để xác nhận tài khoản Nhà bán hàng của quý khách:</td></tr>
             <tr><td><a href="{{ url('vendor/confirm/' . $code) }}">{{ url('vendor/confirm/' . $code) }}</a></td></tr> 
-            {{-- Check the route in web.php --}} 
-            {{-- $code is the base64 encoded vendor `email` which will be sent to the route and will be decoded by confirmVendor() method in Front/VendorController.php --}}
+             
+            
             <tr><td>&nbsp;<br></td></tr>
             <tr><td>Trân trọng,</td></tr>
             <tr><td>&nbsp;</td></tr>

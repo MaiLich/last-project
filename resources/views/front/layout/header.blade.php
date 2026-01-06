@@ -1,5 +1,4 @@
 <?php
-// Getting the 'enabled' sections ONLY and their child categories (using the 'categories' relationship method) which, in turn, include their 'subcategories`
 $sections = \App\Models\Section::sections();
 // dd($sections);
 ?>
@@ -33,7 +32,7 @@ $sections = \App\Models\Section::sections();
 
 
                         <a>
-                            {{-- If the user is authenticated/logged in, show 'My Account', if not, show 'Login/Register' --}} 
+                             
                             @if (\Illuminate\Support\Facades\Auth::check())
                                 Tài khoản
                             @else
@@ -56,7 +55,7 @@ $sections = \App\Models\Section::sections();
 
 
 
-                            {{-- If the user is authenticated/logged in, show 'My Account' and 'Logout', if not, show 'Customer Login' and 'Vendor Login' --}} 
+                             
                             @if (\Illuminate\Support\Facades\Auth::check())
                                 <li>
                                     <a href="{{ url('user/account') }}"> 
@@ -123,7 +122,7 @@ $sections = \App\Models\Section::sections();
 
 
 
-                    {{-- Website Search Form (to search for all website products) --}} 
+                     
                     <form class="form-searchbox" action="{{ url('/search-products') }}" method="get">
                         <label class="sr-only" for="search-landscape">Tìm kiếm</label>
                         <input id="search-landscape" type="text" class="text-field" placeholder="Tìm kiếm sản phẩm..." name="search" @if (isset($_REQUEST['search']) && !empty($_REQUEST['search'])) value="{{ $_REQUEST['search'] }}" @endif>

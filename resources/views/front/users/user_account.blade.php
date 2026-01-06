@@ -1,9 +1,8 @@
-{{-- This page is accessed from My Account tab in the dropdown menu in the header (in front/layout/header.blade.php). Check userAccount() method in Front/UserController.php --}} 
+ 
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Tài khoản của tôi</h2>
@@ -19,9 +18,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Account-Page -->
-    <div class="page-account u-s-p-t-80">
+            <div class="page-account u-s-p-t-80">
         <div class="container">
 
             @if (Session::has('success_message'))
@@ -52,8 +49,7 @@
             @endif
 
             <div class="row">
-                <!-- Update User Account Contact Details -->
-                <div class="col-lg-6">
+                                <div class="col-lg-6">
                     <div class="login-wrapper">
                         <h2 class="account-h2 u-s-m-b-20" style="font-size: 18px">Cập nhật thông tin liên hệ</h2>
 
@@ -132,9 +128,8 @@
                         </form>
                     </div>
                 </div>
-                <!-- Update User Account Contact Details /- -->
-
-                <!-- Update User Password via AJAX --> 
+                
+                <!-- Update User Password  --> 
                 <div class="col-lg-6">
                     <div class="reg-wrapper">
                         <h2 class="account-h2 u-s-m-b-20" style="font-size: 18px">Đổi mật khẩu</h2>
@@ -172,7 +167,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Update User Password via AJAX /- -->
+                <!-- Update User Password /- -->
 
             </div>
         </div>

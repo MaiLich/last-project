@@ -1,4 +1,4 @@
-{{-- Trang này được render bởi phương thức addAttributes() trong Admin/ProductsController.php --}}
+
 @extends('admin.layout.layout')
 
 @section('content')

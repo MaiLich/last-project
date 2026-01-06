@@ -1,9 +1,8 @@
-{{-- Note: cart.blade.php is the page that opens when you ... --}}
+
 @extends('front.layout.layout')
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Giỏ hàng</h2>
@@ -19,9 +18,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Cart-Page -->
-    <div class="page-cart u-s-p-t-80">
+            <div class="page-cart u-s-p-t-80">
         <div class="container">
 
                 @if (Session::has('success_message'))
@@ -58,8 +55,7 @@
                         @include('front.products.cart_items')
                     </div>
 
-                    <!-- Coupon -->
-                    <div class="coupon-continue-checkout u-s-m-b-60">
+                                        <div class="coupon-continue-checkout u-s-m-b-60">
                         <div class="coupon-area">
                             <h6>Nếu bạn có mã giảm giá, hãy nhập vào đây.</h6>
                             <div class="coupon-field">
@@ -77,11 +73,9 @@
                             <a href="{{ url('/checkout') }}" class="checkout">Tiến hành thanh toán</a>
                         </div>
                     </div>
-                    <!-- Coupon /- -->
-
+                    
                 </div>
             </div>
         </div>
     </div>
-    <!-- Cart-Page /- -->
-@endsection
+    @endsection

@@ -1,7 +1,3 @@
-{{-- Show all Vendor products --}} {{-- This file is 'iclude'-ed in front/products/vendor_listing.blade.php --}} 
-
-
-<!-- Row-of-Product-Container -->
 <div class="row product-container grid-style">
 
     @foreach ($vendorProducts as $product)
@@ -17,7 +13,8 @@
                         @if (!empty($product['product_image']) && file_exists($product_image_path))
                             <img class="img-fluid" src="{{ asset($product_image_path) }}" alt="{{ $product['product_name'] }}">
                         @else
-                            <img class="img-fluid" src="{{ asset('front/images/product_images/small/no-image.png') }}" alt="Không có hình ảnh sản phẩm">
+                            <img class="img-fluid" src="{{ asset('front/images/product_images/small/no-image.png') }}"
+                                alt="Không có hình ảnh sản phẩm">
                         @endif
 
                     </a>

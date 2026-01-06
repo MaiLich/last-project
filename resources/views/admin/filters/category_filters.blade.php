@@ -1,4 +1,4 @@
-{{-- Trang này được include bởi add_edit_product.php để hiển thị các bộ lọc liên quan <select> cho sản phẩm mới THÙY THEO DANH MỤC đã chọn --}}
+
 
 @php
 
@@ -16,7 +16,7 @@
 @endphp
 
 
-@foreach ($productFilters as $filter) {{-- hiển thị TẤT CẢ bộ lọc (đang bật/hoạt động) --}}
+@foreach ($productFilters as $filter) 
     @php
         // echo '<pre>', var_dump($product), '</pre>';
         // exit;
@@ -25,7 +25,7 @@
         // dd($filter);
     @endphp
 
-    @if (isset($category_id)) {{-- đến từ AJAX (categoryFilters() trong Admin/FilterController.php) và cũng có thể đến từ if phía trên khi 'Sửa sản phẩm' --}}
+    @if (isset($category_id)) 
         @php
             // dd($filter);
 
@@ -35,16 +35,16 @@
             $filterAvailable = \App\Models\ProductsFilter::filterAvailable($filter['id'], $category_id); // $category_id đến từ AJAX (xem categoryFilters() trong Admin/FilterController.php)
         @endphp
 
-        @if ($filterAvailable == 'Yes') {{-- nếu filter có category_id hiện tại trong `cat_ids` --}}
+        @if ($filterAvailable == 'Yes') 
             <div class="form-group">
-                <label for="{{ $filter['filter_column'] }}">Chọn {{ $filter['filter_name'] }}</label> {{-- Chỉ hiển thị các filter liên quan của sản phẩm (KHÔNG phải tất cả filter) --}}
-                <select name="{{ $filter['filter_column'] }}" id="{{ $filter['filter_column'] }}" class="form-control text-dark"> {{-- $filter['filter_column'] ví dụ: 'ram' --}}
+                <label for="{{ $filter['filter_column'] }}">Chọn {{ $filter['filter_name'] }}</label> 
+                <select name="{{ $filter['filter_column'] }}" id="{{ $filter['filter_column'] }}" class="form-control text-dark"> 
                     <option value="">Chọn giá trị bộ lọc</option>
-                    @foreach ($filter['filter_values'] as $value) {{-- hiển thị các giá trị liên quan của filter --}}
+                    @foreach ($filter['filter_values'] as $value) 
                         @php
                             // echo '<pre>', var_dump($value), '</pre>'; exit;
                         @endphp
-                        <option value="{{ $value['filter_value'] }}" @if (!empty($product[$filter['filter_column']]) && $product[$filter['filter_column']] == $value['filter_value']) selected @endif>{{ ucwords($value['filter_value']) }}</option> {{-- $value['filter_value'] ví dụ: '4GB' --}} {{-- $product[$filter['filter_column']] ví dụ: $product['screen_size'] có thể bằng '5 to 5.4 in' --}}
+                        <option value="{{ $value['filter_value'] }}" @if (!empty($product[$filter['filter_column']]) && $product[$filter['filter_column']] == $value['filter_value']) selected @endif>{{ ucwords($value['filter_value']) }}</option>  
                     @endforeach
                 </select>
             </div>

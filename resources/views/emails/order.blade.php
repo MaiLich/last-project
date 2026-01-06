@@ -1,4 +1,4 @@
-{{-- This is the user Placing Order Confirmation email file using Mailtrap --}} {{-- All the variables (like $name, $mobile, $email, ...) used here are passed in from the checkout() method in Front/ProductsController.php --}}
+ 
 
 
 
@@ -91,7 +91,7 @@
             </td></tr>
             <tr><td>&nbsp;</td></tr>
 
-            {{-- PDF Invoice download link --}}
+            
             <tr>
                 <td>
                     <a href="{{ url('orders/invoice/download/' . $orderDetails['id']) }}">Nhấn vào đây để tải hóa đơn đơn hàng</a>

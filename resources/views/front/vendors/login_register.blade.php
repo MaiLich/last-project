@@ -1,10 +1,9 @@
-{{-- This page is accessed from Vendor Login tab in the drop-down menu in the header (in front/layout/header.blade.php) --}} 
+ 
 @extends('front.layout.layout')
 
 
 @section('content')
-    <!-- Page Introduction Wrapper -->
-    <div class="page-style-a">
+        <div class="page-style-a">
         <div class="container">
             <div class="page-intro">
                 <h2>Tài khoản nhà bán hàng</h2>
@@ -20,9 +19,7 @@
             </div>
         </div>
     </div>
-    <!-- Page Introduction Wrapper /- -->
-    <!-- Account-Page -->
-    <div class="page-account u-s-p-t-80">
+            <div class="page-account u-s-p-t-80">
         <div class="container">
 
             @if (Session::has('success_message'))
@@ -51,8 +48,7 @@
             @endif
 
             <div class="row">
-                <!-- Login -->
-                <div class="col-lg-6">
+                                <div class="col-lg-6">
                     <div class="login-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Đăng nhập (Nhà bán hàng)</h2>
                         <h6 class="account-h6 u-s-m-b-30">Chào mừng quay lại! Đăng nhập vào tài khoản của bạn.</h6>
@@ -78,9 +74,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Login /- -->
-                <!-- Register -->
-                <div class="col-lg-6">
+                                                <div class="col-lg-6">
                     <div class="reg-wrapper">
                         <h2 class="account-h2 u-s-m-b-20">Đăng ký (Nhà bán hàng)</h2>
                         <h6 class="account-h6 u-s-m-b-30">Đăng ký để trở thành nhà bán hàng trên hệ thống của chúng tôi.</h6>
@@ -126,9 +120,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Register /- -->
-            </div>
+                            </div>
         </div>
     </div>
-    <!-- Account-Page /- -->
-@endsection
+    @endsection

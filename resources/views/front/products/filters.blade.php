@@ -1,18 +1,14 @@
-{{-- This is the filters sidebar which is included by 'listing.blade.php' --}}
 @php
-    
+
     $productFilters = \App\Models\ProductsFilter::productFilters(); // Get all the (enabled/active) Filters
     // dd($productFilters);
 @endphp
 
 
 
-<!-- Shop-Left-Side-Bar-Wrapper -->
 <div class="col-lg-3 col-md-3 col-sm-12">
-    <!-- Fetch-Categories-from-Root-Category  -->
     <div class="fetch-categories">
         <h3 class="title-name">Danh mục sản phẩm</h3>
-        <!-- Level 1 -->
         <h3 class="fetch-mark-category">
             <a href="listing.html">T-Shirts
                 <span class="total-fetch-items">(5)</span>
@@ -30,8 +26,6 @@
                 </a>
             </li>
         </ul>
-        <!-- //end Level 1 -->
-        <!-- Level 2 -->
         <h3 class="fetch-mark-category">
             <a href="listing.html">Áo sơ mi
                 <span class="total-fetch-items">(5)</span>
@@ -49,19 +43,15 @@
                 </a>
             </li>
         </ul>
-        <!-- //end Level 2 -->
     </div>
-    <!-- Fetch-Categories-from-Root-Category  /- -->
 
 
 
-    {{-- If the Search Form is not used for searching in front/layout/header.blade.php. Note that Filters will be hidden and won't work in case of using the Search Form --}} 
+
     @if (!isset($_REQUEST['search']))
 
-        <!-- Filters -->
-        <!-- Filter-Size -->
 
-        
+
         @php
             $getSizes = \App\Models\ProductsFilter::getSizes($url);
         @endphp
@@ -81,14 +71,12 @@
                 </div>
             </form>
         </div>
-        <!-- Filter-Size -->
 
 
 
 
-        <!-- Filter-Color -->
 
-        
+
         @php
             $getColors = \App\Models\ProductsFilter::getColors($url);
         @endphp
@@ -106,12 +94,10 @@
                 </div>
             </form>
         </div>
-        <!-- Filter-Color /- -->
 
 
-        <!-- Filter-Brand -->
 
-        
+
         @php
             $getBrands = \App\Models\ProductsFilter::getBrands($url);
         @endphp
@@ -121,20 +107,19 @@
                 <div class="associate-wrapper">
 
                     @foreach ($getBrands as $key => $brand)
-                        <input type="checkbox" class="check-box brand" id="brand{{ $key }}" name="brand[]" value="{{ $brand['id'] }}">
+                        <input type="checkbox" class="check-box brand" id="brand{{ $key }}" name="brand[]"
+                            value="{{ $brand['id'] }}">
                         <label class="label-text" for="brand{{ $key }}">{{ $brand['name'] }}
                         </label>
                     @endforeach
                 </div>
             </form>
         </div>
-        <!-- Filter-Brand /- -->
 
 
 
-        <!-- Filter-Price -->
 
-        
+
         <div class="facet-filter-associates">
             <h3 class="title-name">Mức giá</h3>
             <form class="facet-form" action="#" method="post">
@@ -158,13 +143,11 @@
                 </div>
             </form>
         </div>
-        <!-- Filter-Price /- -->
 
 
 
-        
-        {{-- Dynamic Filters --}}
-        <!-- Filter -->
+
+
         @foreach ($productFilters as $filter)
             @php
                 $filterAvailable = \App\Models\ProductsFilter::filterAvailable($filter['id'], $categoryDetails['categoryDetails']['id']);
@@ -177,7 +160,9 @@
                         <form class="facet-form" action="#" method="post">
                             <div class="associate-wrapper">
                                 @foreach ($filter['filter_values'] as $value)
-                                    <input type="checkbox" class="check-box {{ $filter['filter_column'] }}" id="{{ $value['filter_value'] }}" name="{{ $filter['filter_column'] }}[]" value="{{ $value['filter_value'] }}">
+                                    <input type="checkbox" class="check-box {{ $filter['filter_column'] }}"
+                                        id="{{ $value['filter_value'] }}" name="{{ $filter['filter_column'] }}[]"
+                                        value="{{ $value['filter_value'] }}">
                                     <label class="label-text" for="{{ $value['filter_value'] }}">{{ ucwords($value['filter_value']) }}
                                     </label>
                                 @endforeach
@@ -188,7 +173,6 @@
             @endif
 
         @endforeach
-        <!-- Filter -->
 
     @endif
 
