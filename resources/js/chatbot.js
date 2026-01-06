@@ -1,208 +1,111 @@
-document.addEventListener("DOMContentLoaded", function () {
-  function el(id) { return document.getElementById(id); }
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("chatbot-input");
+    const sendBtn = document.getElementById("chatbot-send");
+    const box = document.getElementById("chatbot-messages");
 
-  const messagesBox = el("chatbot-messages");
-  const input = el("chatbot-input");
-  const sendBtn = el("chatbot-send");
+    const scrollBottom = () => box.scrollTop = box.scrollHeight;
 
-  if (!messagesBox || !input || !sendBtn) {
-    console.error("Chatbot DOM not found:", { messagesBox, input, sendBtn });
-    return;
-  }
+    const price = v => new Intl.NumberFormat("vi-VN").format(v) + "đ";
 
-  // ---- helpers ----
-  function toNumber(v) {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  }
+    const userMsg = txt => {
+        box.innerHTML += `
+            <div class="text-end mb-2">
+                <span class="badge bg-primary p-2">${txt}</span>
+            </div>`;
+        scrollBottom();
+    };
 
-  function formatPrice(v) {
-    const n = toNumber(v);
-    if (n === null) return "";
-    return n.toLocaleString("vi-VN") + "đ";
-  }
+    const botMsg = txt => {
+        box.innerHTML += `
+            <div class="mb-2">
+                <span class="badge bg-secondary p-2">${txt}</span>
+            </div>`;
+        scrollBottom();
+    };
 
-  function safeText(v) {
-    return (v === null || v === undefined) ? "" : String(v);
-  }
+    const renderProducts = (title, list = []) => {
+        if (!Array.isArray(list) || list.length === 0) return;
 
-  function appendMessage(role, text) {
-    const wrap = document.createElement("div");
-    wrap.className = "mb-2";
+        let html = `<div class="mt-3">
+            <h6 class="fw-bold">${title}</h6>
+            <div class="row g-2">`;
 
-    const badge = document.createElement("span");
-    badge.className = role === "user" ? "badge bg-secondary" : "badge bg-success";
-    badge.textContent = role === "user" ? "Bạn" : "Bot";
+        list.forEach(p => {
+            html += `
+            <div class="col-6 col-md-4">
+                <div class="card h-100">
+                    <img src="${p.image ?? '/images/no-image.png'}"
+                         class="card-img-top"
+                         style="height:130px;object-fit:cover">
+                    <div class="card-body p-2">
+                        <div class="small fw-bold">${p.name}</div>
+                        <div class="text-danger fw-bold">${price(p.price)}</div>
+                        <a href="/product/${p.slug ?? p.id}"
+                           class="btn btn-sm btn-outline-primary w-100 mt-1">
+                           Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        });
 
-    const msg = document.createElement("div");
-    msg.className = "mt-1";
-    msg.innerText = safeText(text);
+        html += `</div></div>`;
+        box.innerHTML += html;
+        scrollBottom();
+    };
 
-    wrap.appendChild(badge);
-    wrap.appendChild(msg);
-    messagesBox.appendChild(wrap);
-    messagesBox.scrollTop = messagesBox.scrollHeight;
-  }
+    async function send() {
+        const text = input.value.trim();
+        if (!text) return;
 
-  function uniqById(arr) {
-    if (!Array.isArray(arr)) return [];
-    const seen = new Set();
-    const out = [];
-    for (const p of arr) {
-      const id = p?.id ?? `${p?.name ?? ""}-${p?.price ?? ""}`;
-      if (seen.has(id)) continue;
-      seen.add(id);
-      out.push(p);
-    }
-    return out;
-  }
+        userMsg(text);
+        input.value = "";
+        sendBtn.disabled = true;
 
-  function renderProductsList(titleText, products, opts = {}) {
-    const { limit = 8, showTotal = false, totalPrice = null } = opts;
+        try {
+            const res = await fetch(`${window.CHATBOT_BASE_URL}/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text })
+            });
 
-    const listData = uniqById(products);
-    if (!listData.length) return;
+            const data = await res.json();
+            console.log("CHATBOT RESPONSE:", data); // 👈 RẤT QUAN TRỌNG
 
-    const title = document.createElement("div");
-    title.className = "mt-3 fw-bold";
-    title.innerText = titleText;
-    messagesBox.appendChild(title);
+            // 1️⃣ Answer LUÔN render
+            if (data.answer) {
+                botMsg(data.answer);
+            }
 
-    const ul = document.createElement("ul");
-    ul.className = "mt-2";
+            // 2️⃣ Outfit
+            renderProducts("👗 Outfit gợi ý", data.outfit_products);
 
-    const slice = listData.slice(0, limit);
-    slice.forEach((p) => {
-      const li = document.createElement("li");
+            if (data.outfit_total_price) {
+                botMsg("💰 Tổng outfit: " + price(data.outfit_total_price));
+            }
 
-      const name = safeText(p?.name);
-      const price = formatPrice(p?.price);
-      const color = safeText(p?.color);
+            // 3️⃣ Combo
+            renderProducts("🎁 Combo tiết kiệm", data.budget_combo);
 
-      // thêm chút meta nhưng vẫn gọn
-      const size = safeText(p?.size);
-      const cat = safeText(p?.category);
-      const section = safeText(p?.section);
+            // 4️⃣ Sản phẩm chính
+            renderProducts("🛍️ Sản phẩm phù hợp", data.products);
 
-      const metaParts = [];
-      if (section) metaParts.push(section);
-      if (cat) metaParts.push(cat);
-      if (size) metaParts.push(`Size: ${size}`);
+            // 5️⃣ You may like
+            renderProducts("✨ Có thể bạn thích", data.you_may_like);
 
-      const meta = metaParts.length ? ` (${metaParts.join(" • ")})` : "";
+            // 6️⃣ Admin
+            if (data.need_admin) {
+                botMsg("👉 Trường hợp này bạn nên chat trực tiếp với admin nhé!");
+            }
 
-      li.innerText = `${name}${meta} • ${price || "—"} ${color ? ` • ${color}` : ""}`;
-      ul.appendChild(li);
-    });
-
-    messagesBox.appendChild(ul);
-
-    if (showTotal) {
-      const total =
-        (toNumber(totalPrice) !== null)
-          ? toNumber(totalPrice)
-          : slice.reduce((s, p) => s + (toNumber(p?.price) ?? 0), 0);
-
-      const totalLine = document.createElement("div");
-      totalLine.className = "mt-2";
-      totalLine.innerHTML = `<span class="badge bg-dark">Tổng: ${formatPrice(total) || "0đ"}</span>`;
-      messagesBox.appendChild(totalLine);
+        } catch (e) {
+            console.error(e);
+            botMsg("❌ Có lỗi xảy ra, vui lòng thử lại.");
+        } finally {
+            sendBtn.disabled = false;
+        }
     }
 
-    messagesBox.scrollTop = messagesBox.scrollHeight;
-  }
-
-  function renderNeedAdmin(needAdmin) {
-    if (!needAdmin) return;
-    const box = document.createElement("div");
-    box.className = "alert alert-warning mt-3 mb-0";
-    box.innerText = "Không đủ sản phẩm phù hợp. Bạn nên liên hệ admin để được tư vấn kỹ hơn.";
-    messagesBox.appendChild(box);
-    messagesBox.scrollTop = messagesBox.scrollHeight;
-  }
-
-  function renderResponse(data) {
-    // answer
-    appendMessage("bot", data?.answer ?? "(Không có answer)");
-
-    // nếu là nhánh tư vấn size
-    if (data?.suggested_size) {
-      const sz = document.createElement("div");
-      sz.className = "mt-2";
-      sz.innerHTML = `<span class="badge bg-info">Size gợi ý: ${safeText(data.suggested_size)}</span>`;
-      messagesBox.appendChild(sz);
-    }
-
-    // outfit + total (nếu có)
-    renderProductsList(
-      "Set đồ gợi ý:",
-      data?.outfit_products,
-      { showTotal: true, totalPrice: data?.outfit_total_price }
-    );
-
-    // combo ngân sách
-    renderProductsList(
-      "Combo theo ngân sách:",
-      data?.budget_combo,
-      { showTotal: true }
-    );
-
-    // you may like
-    renderProductsList(
-      "Bạn có thể thích:",
-      data?.you_may_like,
-      { limit: 6 }
-    );
-
-    // fallback: products
-    renderProductsList(
-      "Gợi ý sản phẩm:",
-      data?.products,
-      { limit: 8 }
-    );
-
-    renderNeedAdmin(Boolean(data?.need_admin));
-  }
-
-  async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-
-    appendMessage("user", text);
-    input.value = "";
-    sendBtn.disabled = true;
-
-    try {
-      const base = window.CHATBOT_BASE_URL || "http://127.0.0.1:8001";
-
-      const res = await fetch(`${base}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      });
-
-      if (!res.ok) {
-        const t = await res.text();
-        appendMessage("bot", `Lỗi API (${res.status}): ${t}`);
-        return;
-      }
-
-      const data = await res.json();
-      console.log("API response data:", data); // Debug: Kiểm tra JSON trả về
-      renderResponse(data);
-
-    } catch (e) {
-      appendMessage("bot", `Không gọi được API: ${e.message}`);
-      console.error(e);
-    } finally {
-      sendBtn.disabled = false;
-    }
-  }
-
-  sendBtn.addEventListener("click", sendMessage);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-
-  console.log("Chatbot JS ready ✅ (render outfit/budget/you_may_like)");
+    sendBtn.onclick = send;
+    input.addEventListener("keydown", e => e.key === "Enter" && send());
 });
