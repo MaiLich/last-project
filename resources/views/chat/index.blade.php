@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let lastId = 0;
     let sending = false;
+    let pollTimer = null;
+
+    // chống render trùng dù backend trả lại cùng message nhiều lần
+    let renderedIds = new Set();
 
     function escapeHtml(str) {
         return String(str)
@@ -56,20 +60,39 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${hh}:${mm}`;
     }
 
+    function normalizeSenderType(t) {
+        let s = String(t || '');
+        while (s.includes('\\\\')) s = s.replaceAll('\\\\', '\\');
+        return s;
+    }
+
+    function isUserMessage(msg) {
+        const tail = normalizeSenderType(msg?.sender_type).split('\\').pop();
+        return tail === 'User';
+    }
+
+    function scrollToBottom() {
+        box.scrollTop = box.scrollHeight;
+    }
+
     function renderMessage(msg) {
-        const isMe = msg.sender_type === 'App\\Models\\User' || msg.sender_type === 'App\\\\Models\\\\User';
+        const idNum = Number(msg?.id || 0);
+        if (idNum > 0) {
+            if (renderedIds.has(idNum)) return;
+            renderedIds.add(idNum);
+        }
+
+        const isMe = isUserMessage(msg);
         const wrap = document.createElement('div');
         wrap.className = 'message ' + (isMe ? 'sent' : 'received');
 
         wrap.innerHTML = `
-            <div>${escapeHtml(msg.message ?? '')}</div>
+            <div>${escapeHtml(msg.message ?? '').replace(/\n/g,'<br>')}</div>
             <div class="message-time">${fmtTime(msg.created_at)}</div>
         `;
 
         box.appendChild(wrap);
-        box.scrollTop = box.scrollHeight;
 
-        const idNum = Number(msg.id || 0);
         if (idNum > lastId) lastId = idNum;
     }
 
@@ -94,19 +117,46 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadAll() {
         if (!conversationId) return;
         const list = await fetchJson(`/chat/messages/${conversationId}?t=${Date.now()}`);
+
         box.innerHTML = '';
         lastId = 0;
+        renderedIds = new Set();
+
         (list || []).forEach(renderMessage);
+        scrollToBottom();
     }
 
     async function loadNew() {
         if (!conversationId) return;
+
         const url = lastId
             ? `/chat/messages/${conversationId}?since_id=${lastId}&t=${Date.now()}`
             : `/chat/messages/${conversationId}?t=${Date.now()}`;
 
         const list = await fetchJson(url);
-        (list || []).forEach(renderMessage);
+        let added = false;
+
+        (list || []).forEach(m => {
+            const before = lastId;
+            renderMessage(m);
+            if (lastId !== before) added = true;
+        });
+
+        if (added) scrollToBottom();
+    }
+
+    function stopPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(() => {
+            if (document.hidden) return;
+            if (sending) return; // tránh đua nhau khi đang gửi
+            loadNew().catch(() => {});
+        }, 1000);
     }
 
     async function send() {
@@ -130,13 +180,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             input.value = '';
 
-            // nếu API trả message thì render luôn
-            if (data?.message) renderMessage(data.message);
-
             // nếu lần đầu tạo conversation
             if (data?.conversation_id) conversationId = data.conversation_id;
 
-            // đồng bộ lại tin mới (phòng trường hợp message chưa kèm đủ field)
+            // QUAN TRỌNG: KHÔNG render ngay ở đây để tránh bị nhân đôi
             await loadNew();
         } catch (e) {
             alert(e.message || 'Không gửi được tin nhắn');
@@ -154,16 +201,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // init
     loadAll().catch(console.error);
-
-    // polling 1s/lần
-    setInterval(() => {
-        if (document.hidden) return;
-        loadNew().catch(() => {});
-    }, 1000);
+    startPolling();
 });
 </script>
-
 
 @endsection
