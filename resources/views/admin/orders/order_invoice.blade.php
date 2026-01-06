@@ -115,9 +115,9 @@
                                         </td>
                                         <td class="text-center">{{ $product['product_size'] }}</td>
                                         <td class="text-center">{{ $product['product_color'] }}</td>
-                                        <td class="text-center">INR {{ $product['product_price'] }}</td>
+                                        <td class="text-center">₫ {{ $product['product_price'] }}</td>
                                         <td class="text-center">{{ $product['product_qty'] }}</td>
-                                        <td class="text-right">INR {{ $product['product_price'] * $product['product_qty'] }}</td>
+                                        <td class="text-right">₫ {{ $product['product_price'] * $product['product_qty'] }}</td>
                                     </tr>
 
                                     {{-- Continue: Calculate the Subtotal --}}
@@ -132,7 +132,7 @@
                                     <td class="thick-line"></td>
                                     <td class="thick-line"></td>
                                     <td class="thick-line text-right"><strong>Tạm tính</strong></td>
-                                    <td class="thick-line text-right">INR {{ $subTotal }}</td>
+                                    <td class="thick-line text-right">₫ {{ $subTotal }}</td>
                                 </tr>
                                 <tr>
                                     <td class="no-line"></td>
@@ -140,7 +140,7 @@
                                     <td class="no-line"></td>
                                     <td class="no-line"></td>
                                     <td class="no-line text-right"><strong>Phí vận chuyển</strong></td>
-                                    <td class="no-line text-right">INR 0</td>
+                                    <td class="no-line text-right">₫ 0</td>
                                 </tr>
                                 <tr>
                                     <td class="no-line"></td>
@@ -149,7 +149,7 @@
                                     <td class="no-line"></td>
                                     <td class="no-line text-right"><strong>Tổng cộng</strong></td>
                                     <td class="no-line text-right">
-                                        <strong>INR {{ $orderDetails['grand_total'] }}</strong>
+                                        <strong>₫ {{ $orderDetails['grand_total'] }}</strong>
                                         <br>
 
                                         @if ($orderDetails['payment_method'] == 'COD')

@@ -50,12 +50,12 @@
                     @endforeach
                     <tr>
                         <td colspan="5" align="right">Phí vận chuyển</td>
-                        <td>INR {{ $orderDetails['shipping_charges'] }}</td>
+                        <td>₫ {{ $orderDetails['shipping_charges'] }}</td>
                     </tr>
                     <tr>
                         <td colspan="5" align="right">Giảm giá coupon</td>
                         <td>
-                            INR
+                            ₫
                             @if ($orderDetails['coupon_amount'] > 0)
                                 {{ $orderDetails['coupon_amount'] }}
                             @else
@@ -65,7 +65,7 @@
                     </tr>
                     <tr>
                         <td colspan="5" align="right">Tổng thanh toán</td>
-                        <td>INR {{ $orderDetails['grand_total'] }}</td>
+                        <td>₫ {{ $orderDetails['grand_total'] }}</td>
                     </tr>
                 </table>
             </td></tr>

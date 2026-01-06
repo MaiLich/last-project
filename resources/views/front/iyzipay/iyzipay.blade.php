@@ -49,7 +49,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12" align="center">
-                    <h3>VUI LÒNG THANH TOÁN <span style="color: red">INR {{ Session::get('grand_total') }}</span> CHO ĐƠN HÀNG CỦA BẠN</h3>
+                    <h3>VUI LÒNG THANH TOÁN <span style="color: red">₫ {{ Session::get('grand_total') }}</span> CHO ĐƠN HÀNG CỦA BẠN</h3>
                     <a href="{{ url('iyzipay/pay') }}">
                         <button class="button button2">Thanh toán ngay</button> {{-- Interacting With The Session: Retrieving Data: https://laravel.com/docs/9.x/session#retrieving-data --}}
                     </a>

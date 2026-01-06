@@ -26,7 +26,7 @@ function addSubscriber() {
         // alert('Valid Email!');
 
     } else {
-      alert("Please enter a valid Email!");
+      alert("Vui lòng nhập một Email hợp lệ!");
       return false;
     }
 
@@ -41,10 +41,10 @@ function addSubscriber() {
             // alert(resp);
 
             if (resp == 'Email already exists') { // Check addSubscriber() method in Front/NewsletterController.php
-                alert('Your email already exists for Newsletter Subscription!');
+                alert('Email của bạn đã tồn tại trong danh sách đăng ký nhận bản tin!');
 
             } else if (resp == 'Email saved in our database') { // Check addSubscriber() method in Front/NewsletterController.php
-                alert('Thanks for subscribing!');
+                alert('Cảm ơn bạn đã đăng ký nhận bản tin!');
             }
         },
         error  : function() { // if the AJAX request is unsuccessful
@@ -63,27 +63,36 @@ $(document).ready(function() {
 
     // the <select> box in front/products/detail.blade.php (to show the correct related `price` and `stock` depending on the selected `size` (from the `products_attributes` table))
     $('#getPrice').change(function() {
-        // console.log(this);
         var size       = $(this).val();
         var product_id = $(this).attr('product-id');
-        // console.log(size, product_id);
 
+        function formatPrice(price) {
+            return parseInt(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
         $.ajax({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, // X-CSRF-TOKEN: https://laravel.com/docs/9.x/csrf#csrf-x-csrf-token    
-            url    : '/get-product-price', // check this route in web.php
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url    : '/get-product-price',
             type   : 'post',
-            data   : {size: size, product_id: product_id}, // Sending name/value pairs to server with the AJAX request (AJAX call)
+            data   : {size: size, product_id: product_id},
             success: function(resp) {
                 console.log(resp);
-                if (resp.discount > 0) { // if there's a discount    // this is the same as:    if (resp['discount'] > 0) {
+
+                // Định dạng các giá trước khi hiển thị
+                var finalPrice     = formatPrice(resp.final_price);
+                var productPrice   = formatPrice(resp.product_price);
+                var savedAmount    = formatPrice(resp.product_price - resp.final_price);
+
+                if (resp.discount > 0) {
                     $('.getAttributePrice').html(
-                        '<div class="price"><h4>EGP' + resp.final_price + '</h4></div><div class="original-price"><span>Original Price: </span><span>EGP' + resp.product_price + '</span></div>'
-                    ); // Note: resp.product_price    is the same as    resp['product_price']
-                } else { // if there's no discount
+                        '<div class="price"><h4>' + finalPrice + '₫</h4></div>' +
+                        '<div class="original-price"><span>Giá gốc: </span><span>' + productPrice + '₫</span></div>' +
+                        '<div class="discount-price"><span>Tiết kiệm: </span><span>' + savedAmount + '₫</span></div>'
+                    );
+                } else {
                     $('.getAttributePrice').html(
-                        '<div class="price"><h4>EGP' + resp.final_price + '</h4></div>'
-                    ); // Note: resp.final_price    is the same as    resp['final_price']
+                        '<div class="price"><h4>' + finalPrice + '₫</h4></div>'
+                    );
                 }
             },
             error  : function() {
@@ -109,7 +118,7 @@ $(document).ready(function() {
             // alert(quantity);
             // new_qty = quantity + 1; // Decrease quantity by 1
             if (quantity <= 1) { // Making sure that quantity can never be a negative value (can never be less than zero <0)
-                alert('Item quantity must be 1 or greater!');
+                alert('Số lượng sản phẩm phải là 1 hoặc lớn hơn!');
                 return false; // Stop Execution here! Don't do anything anymore!
             }
             new_qty = parseInt(quantity) - 1; // Decrease quantity by 1    // parseInt() method is used to make sure that quantity is always a number (in case it might be a string)
@@ -154,7 +163,7 @@ $(document).ready(function() {
 
 
         // Confirm Deletion
-        var result = confirm('Are you sure you want to delete this Cart Item?'); // confirm() method returns a Boolean
+        var result = confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?'); // confirm() method returns a Boolean
         if (result) { // if user confirms deletion ('true' is return-ed from confirm() method), do the delete AJAX call, if not ('false' is return-ed from confirm() method), don't do anything
             $.ajax({
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, // X-CSRF-TOKEN: https://laravel.com/docs/9.x/csrf#csrf-x-csrf-token    
@@ -519,7 +528,7 @@ $(document).ready(function() {
         if (user == 1) { // if the user is logged in (authenticated), they can apply coupon (redeem coupons)
 
         } else { // if the user is unauthenticated/logged-out
-            alert('Please login to apply Coupon!');
+            alert('Vui lòng đăng nhập để áp dụng mã giảm giá!');
             return false; // Get out of the WHOLE function!
         }
 
@@ -547,14 +556,14 @@ $(document).ready(function() {
 
                 
                 if (resp.couponAmount > 0) { // if there's a coupon code submitted and it's valid        // 'couponAmount' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php
-                    $('.couponAmount').text('EGP' + resp.couponAmount); // 'couponAmount' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php    
+                    $('.couponAmount').text('₫' + resp.couponAmount); // 'couponAmount' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php    
                 } else {
-                    $('.couponAmount').text('EGP 0');
+                    $('.couponAmount').text('₫ 0');
                 }
 
                 
                 if (resp.grand_total > 0) { // if there's a coupon code submitted and it's valid        // 'grand_total' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php
-                    $('.grand_total').text('EGP' + resp.grand_total); // 'grand_total' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php    
+                    $('.grand_total').text('₫' + resp.grand_total); // 'grand_total' is sent as a PHP array key (in the HTTP response from the server (backend)) from inside the applyCoupon() method in Front/ProductsController.php    
                 }
             },
             error  : function() { // if the AJAX request is unsuccessful
@@ -678,7 +687,7 @@ $(document).ready(function() {
         // alert(shipping_charges);
 
         // Display the Shipping Charges
-        $('.shipping_charges').html('EGP' + shipping_charges);
+        $('.shipping_charges').html('₫' + shipping_charges);
 
         // Show the right Payment Methods radio buttons in front/products/checkout.blade.php based on Getting the results of checking if both the COD and Prepaid PIN codes of the user's Delviery Address exist in our both `cod_pincodes` and `prepaid_pincodes` database tables. Check the checkout() method in Front/ProductsController.php and front/products/checkout.blade.php    
         var codpincodeCount     = $(this).attr('codpincodeCount');     // using Custom HTML data attributes (data-*)
@@ -700,14 +709,14 @@ $(document).ready(function() {
         }
 
         // Display the Coupon Amount
-        $('.couponAmount').html('EGP' + coupon_amount);
+        $('.couponAmount').html('₫' + coupon_amount);
 
         // Calculate the Grand Total
         var grand_total = parseInt(total_price) + parseInt(shipping_charges) - parseInt(coupon_amount);
         // alert(grand_total);
 
         // Display the Grand Total
-        $('.grand_total').html('EGP' + grand_total);
+        $('.grand_total').html('₫' + grand_total);
     });
 
     // PIN code Availability Check: check if the PIN code of the user's Delivery Address exists in our database (in both `cod_pincodes` and `prepaid_pincodes`) or not in front/products/detail.blade.php via AJAX    
@@ -717,7 +726,7 @@ $(document).ready(function() {
         var pincode = $('#pincode').val(); // using Custom HTML data attributes (data-*)
         // alert(pincode);
         if (pincode == '') { // If the user doesn't enter their PIN code (if the PIN code is empty)
-            alert('Please enter Pincode');
+            alert('Vui lòng nhập mã bưu điện');
 
             return false; // Stop the function's execution and get out!
         }

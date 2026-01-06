@@ -5,10 +5,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const input = el("chatbot-input");
   const sendBtn = el("chatbot-send");
 
-  // Debug: nếu không tìm thấy element thì báo luôn
   if (!messagesBox || !input || !sendBtn) {
     console.error("Chatbot DOM not found:", { messagesBox, input, sendBtn });
     return;
+  }
+
+  // ---- helpers ----
+  function toNumber(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function formatPrice(v) {
+    const n = toNumber(v);
+    if (n === null) return "";
+    return n.toLocaleString("vi-VN") + "đ";
+  }
+
+  function safeText(v) {
+    return (v === null || v === undefined) ? "" : String(v);
   }
 
   function appendMessage(role, text) {
@@ -21,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const msg = document.createElement("div");
     msg.className = "mt-1";
-    msg.innerText = text;
+    msg.innerText = safeText(text);
 
     wrap.appendChild(badge);
     wrap.appendChild(msg);
@@ -29,26 +44,124 @@ document.addEventListener("DOMContentLoaded", function () {
     messagesBox.scrollTop = messagesBox.scrollHeight;
   }
 
-  function renderProducts(products) {
-    if (!products || !Array.isArray(products) || products.length === 0) return;
+  function uniqById(arr) {
+    if (!Array.isArray(arr)) return [];
+    const seen = new Set();
+    const out = [];
+    for (const p of arr) {
+      const id = p?.id ?? `${p?.name ?? ""}-${p?.price ?? ""}`;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      out.push(p);
+    }
+    return out;
+  }
+
+  function renderProductsList(titleText, products, opts = {}) {
+    const { limit = 8, showTotal = false, totalPrice = null } = opts;
+
+    const listData = uniqById(products);
+    if (!listData.length) return;
 
     const title = document.createElement("div");
     title.className = "mt-3 fw-bold";
-    title.innerText = "Gợi ý sản phẩm:";
+    title.innerText = titleText;
     messagesBox.appendChild(title);
 
-    const list = document.createElement("ul");
-    list.className = "mt-2";
+    const ul = document.createElement("ul");
+    ul.className = "mt-2";
 
-    products.slice(0, 8).forEach(p => {
+    const slice = listData.slice(0, limit);
+    slice.forEach((p) => {
       const li = document.createElement("li");
-      const price = typeof p.price === "number" ? p.price.toLocaleString("vi-VN") : (p.price ?? "");
-      li.innerText = `${p.name ?? ""} • ${price}đ • ${p.color ?? ""}`;
-      list.appendChild(li);
+
+      const name = safeText(p?.name);
+      const price = formatPrice(p?.price);
+      const color = safeText(p?.color);
+
+      // thêm chút meta nhưng vẫn gọn
+      const size = safeText(p?.size);
+      const cat = safeText(p?.category);
+      const section = safeText(p?.section);
+
+      const metaParts = [];
+      if (section) metaParts.push(section);
+      if (cat) metaParts.push(cat);
+      if (size) metaParts.push(`Size: ${size}`);
+
+      const meta = metaParts.length ? ` (${metaParts.join(" • ")})` : "";
+
+      li.innerText = `${name}${meta} • ${price || "—"} ${color ? ` • ${color}` : ""}`;
+      ul.appendChild(li);
     });
 
-    messagesBox.appendChild(list);
+    messagesBox.appendChild(ul);
+
+    if (showTotal) {
+      const total =
+        (toNumber(totalPrice) !== null)
+          ? toNumber(totalPrice)
+          : slice.reduce((s, p) => s + (toNumber(p?.price) ?? 0), 0);
+
+      const totalLine = document.createElement("div");
+      totalLine.className = "mt-2";
+      totalLine.innerHTML = `<span class="badge bg-dark">Tổng: ${formatPrice(total) || "0đ"}</span>`;
+      messagesBox.appendChild(totalLine);
+    }
+
     messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  function renderNeedAdmin(needAdmin) {
+    if (!needAdmin) return;
+    const box = document.createElement("div");
+    box.className = "alert alert-warning mt-3 mb-0";
+    box.innerText = "Không đủ sản phẩm phù hợp. Bạn nên liên hệ admin để được tư vấn kỹ hơn.";
+    messagesBox.appendChild(box);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  function renderResponse(data) {
+    // answer
+    appendMessage("bot", data?.answer ?? "(Không có answer)");
+
+    // nếu là nhánh tư vấn size
+    if (data?.suggested_size) {
+      const sz = document.createElement("div");
+      sz.className = "mt-2";
+      sz.innerHTML = `<span class="badge bg-info">Size gợi ý: ${safeText(data.suggested_size)}</span>`;
+      messagesBox.appendChild(sz);
+    }
+
+    // outfit + total (nếu có)
+    renderProductsList(
+      "Set đồ gợi ý:",
+      data?.outfit_products,
+      { showTotal: true, totalPrice: data?.outfit_total_price }
+    );
+
+    // combo ngân sách
+    renderProductsList(
+      "Combo theo ngân sách:",
+      data?.budget_combo,
+      { showTotal: true }
+    );
+
+    // you may like
+    renderProductsList(
+      "Bạn có thể thích:",
+      data?.you_may_like,
+      { limit: 6 }
+    );
+
+    // fallback: products
+    renderProductsList(
+      "Gợi ý sản phẩm:",
+      data?.products,
+      { limit: 8 }
+    );
+
+    renderNeedAdmin(Boolean(data?.need_admin));
   }
 
   async function sendMessage() {
@@ -61,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       const base = window.CHATBOT_BASE_URL || "http://127.0.0.1:8001";
-      console.log("Sending to:", `${base}/chat`, "message:", text);
 
       const res = await fetch(`${base}/chat`, {
         method: "POST",
@@ -76,8 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const data = await res.json();
-      appendMessage("bot", data.answer ?? "(Không có answer)");
-      renderProducts(data.products);
+      console.log("API response data:", data); // Debug: Kiểm tra JSON trả về
+      renderResponse(data);
 
     } catch (e) {
       appendMessage("bot", `Không gọi được API: ${e.message}`);
@@ -92,5 +204,5 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.key === "Enter") sendMessage();
   });
 
-  console.log("Chatbot JS ready ✅");
+  console.log("Chatbot JS ready ✅ (render outfit/budget/you_may_like)");
 });

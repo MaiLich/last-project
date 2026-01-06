@@ -99,7 +99,7 @@
                                 <div class="form-group">
                                     <label for="amount_type">Loại giá trị:</label><br>
                                     <span><input type="radio" name="amount_type" value="Percentage"  @if (isset($coupon['amount_type']) && $coupon['amount_type'] == 'Percentage') checked @endif>&nbsp;Phần trăm&nbsp;(%)&nbsp;</span>
-                                    <span><input type="radio" name="amount_type" value="Fixed"       @if (isset($coupon['amount_type']) && $coupon['amount_type'] == 'Fixed')      checked @endif>&nbsp;Cố định&nbsp;(INR hoặc USD)</span>
+                                    <span><input type="radio" name="amount_type" value="Fixed"       @if (isset($coupon['amount_type']) && $coupon['amount_type'] == 'Fixed')      checked @endif>&nbsp;Cố định&nbsp;(₫ hoặc USD)</span>
                                 </div>
 
                                 <div class="form-group">

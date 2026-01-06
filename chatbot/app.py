@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from chatbot import fashion_chat
 from faq import check_faq
 from dbsetup import setup_db
+import uvicorn
 
 app = FastAPI()
 
@@ -16,8 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Gọi setup_db khi app khởi động
-setup_db()
 
 class ChatRequest(BaseModel):
     message: str
@@ -28,3 +27,5 @@ def chat(req: ChatRequest):
     if faq:
         return {"answer": faq, "products": [], "outfit_products": []}
     return fashion_chat(req.message)
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8001)
