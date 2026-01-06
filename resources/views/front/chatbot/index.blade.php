@@ -15,7 +15,7 @@
                     <div class="text-muted" style="font-size:13px; line-height:1.4;">
                         Tôi có thể hỗ trợ giải đáp câu hỏi,đưa ra sản phẩm theo yêu cầu, tư vấn size khi bạn nhập chiều cao, cân nặng và trả lời nhanh 24/7.
                         <br>
-                        <span class="text-warning">Lưu ý:</span> Câu trả lời mang tính tham khảo. Nếu cần hỗ trợ cụ thể, vui lòng liên hệ với admin.
+                        <span class="text-warning">Lưu ý:</span> Câu trả lời mang tính tham khảo. Nếu thấy câu trả lời không phù hợp, vui lòng liên hệ với admin.
                     </div>
                 </div>
             </div>
