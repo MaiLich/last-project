@@ -3,25 +3,22 @@
 @section('content')
 
     {{-- HERO giống các trang Shop/Discounted --}}
-    <section class="py-4" style="background:#f5f5f5;">
+    <div class="page-style-a">
         <div class="container">
-            <div class="row justify-content-center text-center">
-                <div class="col-lg-8">
-                    <h1 class="mb-2" style="font-size:32px;font-weight:600;">Blog</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center mb-0" style="background:transparent;">
-                            <li class="breadcrumb-item">
-                                <a href="{{ url('/') }}">Trang chủ</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                Blog
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+            <div class="page-intro">
+                <h2>Blog</h2>
+                <ul class="bread-crumb">
+                    <li class="has-separator">
+                        <i class="ion ion-md-home"></i>
+                        <a href="{{ url('/') }}">Trang chủ</a>
+                    </li>
+                    <li class="is-marked">
+                        <a href="javascript:;">Blog</a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </section>
+    </div>
 
     {{-- DANH SÁCH BÀI VIẾT – XẾP DỌC --}}
     <div class="container py-5">

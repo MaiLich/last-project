@@ -9,7 +9,7 @@ from rapidfuzz import fuzz
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
-#Tăng độ nhận diện từ khóa bằng cách thêm từ đồng nghĩa
+#Tăng độ nhận diện từ khóa
 SYNONYMS = {
     "áo phông": "áo thun",
     "áo phông tay dài": "áo thun dài tay",
@@ -24,8 +24,8 @@ SYNONYMS = {
     "trời lạnh mùa đông": "mùa đông trời lạnh rét",
     "nóng bức oi bức": "hè nóng oi bức",
     "giàu có": "nhiều tiền giàu sang sang chảnh high-end luxury",
-    "khá giả": "trung bình khá giả có tiền chút",
-    "tiết kiệm": "nghèo bình dân ít tiền tiết kiệm giá rẻ rẻ tiền dưới 500k",
+    "khá giả": "trung bình khá giả có tiền chút phải chăng hợp lý vừa túi tiền",
+    "tiết kiệm": "nghèo bình dân ít tiền tiết kiệm giá rẻ rẻ tiền dưới 500k sinh viên",
 }
 # Ngữ cảnh
 INTENT_MAP = {
@@ -55,10 +55,11 @@ CONTEXT_KEYWORDS = {
     "travel": ["áo khoác nhẹ", "quần short", "áo thun", "balo", "giày sneaker"],
     "date": ["váy", "đầm", "áo kiểu", "áo hai dây", "chân váy", "áo croptop", "áo ôm"]
 }
-#Từ khóa nhận diện trang phục trên và dưới
+#Từ khóa nhận diện trang phục
 TOP_KEYWORDS = ["áo", "hoodie", "len", "nỉ", "sơ mi", "áo khoác", "áo thun", "áo blouse"]
 BOTTOM_KEYWORDS = ["quần", "jeans", "kaki", "váy", "short", "đầm", "chân váy"]
 ACCESSORY_KEYWORDS = ["giày", "phụ kiện", "mũ", "đồng hồ", "túi xách", "balo"]
+ALL_PRODUCT_KEYWORDS = TOP_KEYWORDS + BOTTOM_KEYWORDS + ACCESSORY_KEYWORDS
 #Mức độ ưu tiên sản phẩm
 PRODUCT_SCORES = {
     "áo": 100,
@@ -79,9 +80,9 @@ PRODUCT_SCORES = {
 UNISEX = ["unisex", "cả nam và nữ", "nam nữ"]
 # Mức độ chi tiêu
 WALLET_LEVELS = {
-    "giàu": ["giàu", "nhiều tiền", "sang chảnh", "high-end", "luxury", "không quan tâm giá", "không ngại giá", "cao cấp"],
-    "khá": ["khá giả", "trung bình", "khá", "có tiền chút", "trên 500k", "trên 500"],
-    "tiết kiệm": ["tiết kiệm", "nghèo", "bình dân", "rẻ", "ít tiền", "giá rẻ", "dưới 500k", "dưới 500"]
+    "giàu": ["giàu", "nhiều tiền", "sang chảnh", "high-end", "luxury", "không quan tâm giá", "không ngại giá", "cao cấp", "đắt tiền"],
+    "khá": ["khá giả", "trung bình", "khá", "có tiền chút", "trên 500k", "phải chăng", "hợp lý", "vừa phải"],
+    "tiết kiệm": ["tiết kiệm", "nghèo", "bình dân", "rẻ", "ít tiền", "giá rẻ", "dưới 500k", "sinh viên"]
 }
 
 
@@ -90,13 +91,18 @@ def normalize_text(text: str) -> str:
     text = text.lower()
     text = unidecode(text)
     for key, value in SYNONYMS.items():
-        text = text.replace(unidecode(key.lower()), unidecode(value.lower()))
+        k = unidecode(key.lower())
+        v = unidecode(value.lower())
+        text = re.sub(r'\b' + re.escape(k) + r'\b', v, text)
     text = " ".join(text.split())
     return text
+
 # So khớp từ khóa với ngưỡng nhất định
 def fuzzy_match(keyword: str, text: str, threshold: int = 85) -> bool:
     norm_keyword = unidecode(keyword.lower())
     words = text.split()
+    if len(norm_keyword) <= 3:
+        return norm_keyword in words
     for word in words:
         if fuzz.ratio(norm_keyword, word) >= threshold:
             return True
@@ -153,11 +159,30 @@ def get_products_cached():
         _PRODUCTS_CACHE = load_products()
     return _PRODUCTS_CACHE
 
+# Hàm tìm từ khóa sản phẩm cụ thể trong câu hỏi
+def detect_explicit_keyword(text):
+    norm_text = normalize_text(text)
+    sorted_keys = sorted(ALL_PRODUCT_KEYWORDS, key=len, reverse=True)
+    for key in sorted_keys:
+        if fuzzy_match(key, norm_text):
+            return key
+    return None
+
+#Hàm nhận diện size cụ thể trong text
+def detect_explicit_size_name(text):
+    text_upper = text.upper()
+    match = re.search(r'\b(?:SIZE\s*)?(S|M|L|XL|XXL|2XL|3XL)\b', text_upper)
+    if match:
+        return match.group(1)
+    return None
 
 #Hàm nhận diện ý định hỏi về size
 def detect_size_intent(text):
     text = normalize_text(text)
-    return bool(re.search(r"\d+(?:\.\d+)?\s*(cm|dm|m)", text) and re.search(r"\d+(?:\.\d+)?\s*kg", text))
+    has_measurements = bool(re.search(r"\d+(?:\.\d+)?\s*(cm|dm|m)", text) and re.search(r"\d+(?:\.\d+)?\s*kg", text))
+    has_explicit_size = bool(detect_explicit_size_name(text))
+    return has_measurements or has_explicit_size
+
 # Hàm phân tích chiều cao và cân nặng từ chuỗi
 def parse_height_weight(text):
     text_lower = text.lower()
@@ -235,18 +260,18 @@ def detect_wallet_level(text):
     if fuzzy_any(WALLET_LEVELS["tiết kiệm"], norm_text):
         return "tiết kiệm"
     return None
-# Hàm mới: Nhận diện số lượng từ văn bản (ví dụ: "gợi ý 3 áo", "hiển thị 5 sản phẩm")
+# Nhận diện số lượng
 def detect_quantity(text):
     norm_text = normalize_text(text)
     m = re.search(r"(gợi ý|hiển thị|tìm|cho xem|muốn xem)\s*(\d+)", norm_text)
     if m:
         return int(m.group(2))
     return None
-# Hàm mới: Kiểm tra nếu chỉ hỏi về giá (không có ngữ cảnh khác)
+# Kiểm tra nếu chỉ hỏi về giá 
 def is_price_only_query(text, budget, contexts):
     if budget and not contexts:
         norm_text = normalize_text(text)
-        price_keywords = ["giá", "dưới", "trên", "khoảng", "rẻ", "đắt"]
+        price_keywords = ["giá", "dưới", "trên", "khoảng", "rẻ", "đắt", "bao nhiêu"]
         if any(kw in norm_text for kw in price_keywords):
             return True
     return False
@@ -291,21 +316,50 @@ def filter_by_gender(products, gender):
 def filter_by_budget(products, max_budget=None, min_budget=None):
     if max_budget is None and min_budget is None:
         return products
-    if min_budget:
-        products = [p for p in products if p["price"] >= min_budget]
-    if max_budget:
-        products = [p for p in products if p["price"] <= max_budget]
-    return products
+    filtered = products
+    if min_budget is not None:
+        filtered = [p for p in filtered if p["price"] >= min_budget]
+    if max_budget is not None:
+        filtered = [p for p in filtered if p["price"] < max_budget] 
+    return filtered
+
 #Hàm lọc sản phẩm theo ngữ cảnh
-def filter_by_contexts(products, contexts):
+def filter_by_contexts(products, contexts, explicit_keyword=None):
     if not contexts:
         return products
-    all_keys = set()
+
+    context_keys = set()
     for ctx in contexts:
-        all_keys.update(CONTEXT_KEYWORDS.get(ctx, []))
-    if not all_keys:
-        return products
-    return [p for p in products if any(fuzzy_match(k, normalize_text(p["name"])) for k in all_keys)]
+        context_keys.update(CONTEXT_KEYWORDS.get(ctx, []))
+
+    filtered = []
+
+    for p in products:
+        p_name = normalize_text(p["name"])
+        p_cat = normalize_text(p["category"])
+        p_parent = normalize_text(p.get("parent_category", ""))
+
+        
+        if explicit_keyword and (
+            fuzzy_match(explicit_keyword, p_name) or
+            fuzzy_match(explicit_keyword, p_cat) or
+            fuzzy_match(explicit_keyword, p_parent)
+        ):
+            filtered.append(p)
+            continue
+
+        
+        if not explicit_keyword:
+            if any(fuzzy_match(k, p_name) for k in context_keys):
+                filtered.append(p)
+        else:
+            
+            context_keys_list = list(context_keys)
+            if any(fuzzy_match(k, p_name) for k in context_keys_list[:2]):
+                filtered.append(p)
+
+    return filtered
+
 
 # Hàm tính điểm ưu tiên sản phẩm
 def score_product(p):
@@ -316,38 +370,66 @@ def score_product(p):
         if fuzzy_match(k, name) or k in cat:
             score = max(score, v)
     return score
-#Hàm sắp xếp 
+#Hàm xử lý xung đột ngữ cảnh
+def resolve_conflicting_contexts(contexts):
+    if "winter" in contexts and "summer" in contexts:
+        contexts.remove("summer") 
+    
+    if "winter" in contexts and "autumn" in contexts:
+        contexts.remove("autumn")
+
+    if "work" in contexts and "home" in contexts:
+        contexts.remove("home") 
+    if "date" in contexts and "home" in contexts:
+        contexts.remove("home")
+    return list(set(contexts))
+
+#Hàm sắp xếp
 def sort_products(products, wallet_level=None):
     for p in products:
         p["score"] = score_product(p)
+    
     if wallet_level == "giàu":
         return sorted(products, key=lambda x: (-x["score"], -x["price"]))  
-    elif wallet_level == "tiết kiệm":
-        return sorted(products, key=lambda x: (-x["score"], x["price"])) 
     else:
         return sorted(products, key=lambda x: (-x["score"], x["price"])) 
 
 #Lọc sản phẩm người lớn
 def filter_adult_products(products):
     child_keywords = ["trẻ em", "bé", "trẻ con", "kid", "em bé", "baby"]
-    return [p for p in products if not fuzzy_any(child_keywords, normalize_text(p["parent_category"] + " " + p["name"]))]
+    filtered = []
+    for p in products:
+        category_text = normalize_text(p.get("parent_category", ""))
+        name_text = normalize_text(p.get("name", ""))
+        
+        if fuzzy_any(child_keywords, category_text):
+            continue
+            
+        if fuzzy_any(["trẻ em", "cho bé", "kid"], name_text): 
+            continue
+            
+        filtered.append(p)
+    return filtered
+
 
 
 #Hàm phân loại mức giá theo tài chính
 def get_price_category(total_price):
-    if total_price >= 1_000_000:
+    if total_price > 1_000_000:
         return "giàu", "sang trọng, chất lượng cao cấp, đẳng cấp"
     elif total_price >= 500_000:
         return "khá", "hiện đại, chất lượng tốt, phong cách"
     else:
         return "tiết kiệm", "trẻ trung, năng động, giá cực hời, nghèo, khó khăn"
+
 #Ham xây dựng outfit dựa trên ngữ cảnh và ngân sách
-def build_smart_outfit(products, contexts, budget=None):
+def build_smart_outfit(products, contexts, budget=None, wallet_level=None):
     if not products:
         return []
 
-    # Ưu tiên score trước, giá sau
-    sorted_prods = sorted(products, key=lambda x: (-x.get("score", 0), x["price"]))
+    # Nếu giàu thì sắp xếp giá giảm dần, ngược lại tăng dần
+    reverse_price = (wallet_level == "giàu")
+    sorted_prods = sorted(products, key=lambda x: (-x.get("score", 0), -x["price"] if reverse_price else x["price"]))
 
     outfit = []
     total = 0
@@ -555,10 +637,21 @@ def fashion_chat(user_message: str):
     vectordb = get_vectordb()
 
     # Ưu tiên size
-    if detect_size_intent(user_message):
-        height, weight = parse_height_weight(user_message)
-        size = suggest_size(height, weight)
+    size_intent = detect_size_intent(user_message)
+    height, weight = parse_height_weight(user_message)
+    explicit_size = detect_explicit_size_name(user_message)
+
+    if size_intent or explicit_size:
+        calculated_size = suggest_size(height, weight)
+        size = explicit_size if explicit_size else calculated_size
         
+        # Tạo thông báo size phù hợp
+        size_msg = ""
+        if explicit_size:
+            size_msg = f"Mình đã lọc các sản phẩm size {size} cho bạn."
+        elif calculated_size:
+            size_msg = f"Với chiều cao và cân nặng bạn cung cấp, mình khuyên bạn chọn size {size} nhé!"
+
         query = normalize_text(user_message) + f" size {size}"
         docs = vectordb.similarity_search_with_score(query, k=50)
         products_size = [doc[0].metadata for doc in docs if doc[1] > 0.5]  
@@ -572,7 +665,7 @@ def fashion_chat(user_message: str):
         
         products_size = filter_by_gender(products_size, gender)
         
-        if gender is None and height is not None and height > 120:
+        if gender != "trẻ em":
             products_size = filter_adult_products(products_size)
         
         # Thêm lọc theo loại trang phục và ngữ cảnh
@@ -581,7 +674,9 @@ def fashion_chat(user_message: str):
             products_size = [p for p in products_size if detect_role(p) == item_type]
         
         contexts = detect_contexts(user_message)
-        products_size = filter_by_contexts(products_size, contexts)
+        contexts = resolve_conflicting_contexts(contexts) 
+        explicit_keyword = detect_explicit_keyword(user_message)
+        products_size = filter_by_contexts(products_size, contexts, explicit_keyword=explicit_keyword)
         
         products_size = sort_products(products_size)
         
@@ -590,33 +685,47 @@ def fashion_chat(user_message: str):
         display_limit = quantity if quantity else 6
         
         return clean_for_json({
-            "answer": f"Với chiều cao {height}cm và cân nặng {weight}kg, mình khuyên bạn chọn size {size} nhé!",
+            "answer": size_msg,
             "suggested_size": size,
             "products": products_size[:display_limit],
-            "you_may_like": recommend_you_may_like(products_size)
+            "you_may_like": recommend_you_may_like(products_size, contexts, gender)
         })
 
     #Phân tích ý định
     gender = detect_gender(user_message)
-    budget = detect_budget(user_message)
+    detected_budget = detect_budget(user_message)
     wallet_level = detect_wallet_level(user_message)
-    contexts = detect_contexts(user_message)
+    raw_contexts = detect_contexts(user_message)
+    contexts = resolve_conflicting_contexts(raw_contexts)
+
     quantity = detect_quantity(user_message)
+
+    adult_contexts = ["work", "date", "office"]
+    is_strictly_adult = any(ctx in contexts for ctx in adult_contexts)
 
     #setbuget theo hoàn cảnh
     min_budget = None
-    if wallet_level and not budget:
-        if wallet_level == "giàu":
-            budget = float('inf')  
-            min_budget = 1_000_000  
+    max_budget = None
+
+    if detected_budget:
+        norm_text = normalize_text(user_message)
+        if any(w in norm_text for w in ["tren", "lon hon", "cao hon", "tu"]):
+            min_budget = detected_budget
+        else:
+            max_budget = detected_budget
+    elif wallet_level:
+        if wallet_level == "tiết kiệm":
+            max_budget = 500_000 
+            min_budget = 0
         elif wallet_level == "khá":
-            budget = 1_000_000  
-            min_budget = 500_000
-        elif wallet_level == "tiết kiệm":
-            budget = 500_000  
+            min_budget = 500_000 
+            max_budget = 1_000_000 + 1 
+        elif wallet_level == "giàu":
+            min_budget = 1_000_000 + 1 
+            max_budget = None
 
     # Kiểm tra nếu chỉ hỏi về giá
-    price_only = is_price_only_query(user_message, budget, contexts)
+    price_only = is_price_only_query(user_message, detected_budget, contexts)
     if price_only:
         contexts = []
 
@@ -624,10 +733,11 @@ def fashion_chat(user_message: str):
     query_parts = [normalize_text(user_message)]
     if gender:
         query_parts.append(gender)
-    if budget:
-        query_parts.append(f"giá dưới {budget}")
+    
+    # Thêm gợi ý giá vào query vector
     if wallet_level:
-        query_parts.append(f"giá {wallet_level}")  
+        query_parts.append(f"giá {wallet_level}")
+        
     if contexts:
         query_parts.extend([", ".join(CONTEXT_KEYWORDS.get(ctx, [])) for ctx in contexts])
     query = " ".join(query_parts)
@@ -640,13 +750,29 @@ def fashion_chat(user_message: str):
 
     # Lọc sản phẩm
     products = filter_by_gender(products, gender)
-    products = filter_by_contexts(products, contexts)
+    
 
-    # Lọc budget 
-    filtered_products = filter_by_budget(products, max_budget=budget, min_budget=min_budget)
-    if len(filtered_products) < 2 and min_budget:
-        filtered_products = filter_by_budget(products, max_budget=budget)
-
+# Lọc sản phẩm người lớn
+    if gender == "trẻ em":
+        pass
+    elif is_strictly_adult:
+        products = filter_adult_products(products)
+    elif gender is None:
+        products = filter_adult_products(products)
+    explicit_keyword = detect_explicit_keyword(user_message)
+    products = filter_by_contexts(products, contexts, explicit_keyword=explicit_keyword)
+    
+    # Lọc budget
+    filtered_products = filter_by_budget(products, max_budget=max_budget, min_budget=min_budget)
+    
+    if len(filtered_products) == 0:
+        if wallet_level == "khá": 
+            
+            filtered_products = filter_by_budget(products, max_budget=max_budget)
+        elif wallet_level == "giàu":
+            
+            filtered_products = filter_by_budget(products, min_budget=500_000)
+    
     products = filtered_products
 
     #Loại các sản phẩm trùng lặp
@@ -661,19 +787,22 @@ def fashion_chat(user_message: str):
     # Sort với wallet_level
     products = sort_products(products, wallet_level=wallet_level)
     # Nếu không đủ sản phẩm, yêu cầu admin tư vấn
-    if len(products) < 2:
+    if len(products) < 1:
         return {
-            "answer": " Mình chưa tìm được món phù hợp hãy chat trực tiếp với admin để được tư vấn chi tiết hơn nhé!",
+            "answer": " Mình chưa tìm được món phù hợp với tiêu chí giá và kiểu dáng này. Bạn thử đổi từ khóa hoặc chat trực tiếp với admin để được tư vấn chi tiết hơn nhé!",
             "products": [],
             "need_admin": True
         }
 
-    #Gợi ý outfit và combo (bỏ qua outfit nếu chỉ hỏi giá)
-    outfit = [] if price_only else build_smart_outfit(products, contexts, budget)
-    combo = build_combo(products, budget)
+    #Gợi ý outfit và combo 
+    algo_budget = detected_budget if detected_budget else (max_budget if max_budget else 20000000)
+    
+    outfit = [] if price_only else build_smart_outfit(products, contexts, budget=algo_budget, wallet_level=wallet_level)
+    combo = build_combo(products, budget=algo_budget)
+    
     #Tính tổng giá outfit
     outfit_total = sum(p["price"] for p in outfit)
-    _, style_desc = get_price_category(outfit_total)
+    cas_res = get_price_category(outfit_total)
 
     #Trả lời dựa theo hoàn cảnh giàu/ nghèo
     effective_wallet = wallet_level or get_price_category(outfit_total)[0]
@@ -714,7 +843,7 @@ def fashion_chat(user_message: str):
         "products": products[:display_limit],
         "outfit_products": outfit,
         "budget_combo": combo,
-        "you_may_like": recommend_you_may_like(products),
+        "you_may_like": recommend_you_may_like(products, contexts, gender),
         "outfit_total_price": outfit_total,
         "need_admin": False
     })

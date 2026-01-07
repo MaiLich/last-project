@@ -90,23 +90,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.answer) botMsg(data.answer);
 
-            renderProducts("👗 Outfit gợi ý", data.outfit_products);
+            renderProducts("Outfit gợi ý", data.outfit_products);
 
             if (data.outfit_total_price) {
-                botMsg("💰 Tổng outfit: " + price(data.outfit_total_price));
+                botMsg("Tổng outfit: " + price(data.outfit_total_price));
             }
 
-            renderProducts("🎁 Combo tiết kiệm", data.budget_combo);
-            renderProducts("🛍️ Sản phẩm phù hợp", data.products);
-            renderProducts("✨ Có thể bạn thích", data.you_may_like);
+            renderProducts("Combo tiết kiệm", data.budget_combo);
+            renderProducts("Sản phẩm phù hợp", data.products);
+            renderProducts("Có thể bạn thích", data.you_may_like);
 
             if (data.need_admin) {
-                botMsg("👉 Trường hợp này bạn nên chat trực tiếp với admin nhé!");
+                botMsg("Trường hợp này bạn nên chat trực tiếp với admin nhé!");
             }
 
         } catch (e) {
             console.error(e);
-            botMsg("❌ Có lỗi xảy ra, vui lòng thử lại.");
+            botMsg("Có lỗi xảy ra, vui lòng thử lại.");
         } finally {
             sendBtn.disabled = false;
         }
