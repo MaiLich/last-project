@@ -61,15 +61,18 @@ class AdminController extends Controller
             ->get();
 
         
-        $revenueByMonth = Order::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('SUM(grand_total - shipping_charges) as total')
-        )
-            ->whereYear('created_at', date('Y'))
+        $revenueByMonth = Order::selectRaw('
+        YEAR(created_at) as year,
+        MONTH(created_at) as month,
+        SUM(grand_total - shipping_charges) as total
+    ')
             ->where('order_status', '!=', 'Canceled')
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+            ->limit(3)
+            ->get()
+            ->reverse()
+            ->values();
 
         
         $revenueByYear = Order::select(

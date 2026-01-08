@@ -13,6 +13,8 @@ use App\Models\OrdersProduct;
 use App\Models\OrdersLog;
 use App\Models\OrderStatus;
 use App\Models\OrderItemStatus;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class OrderController extends Controller
@@ -337,9 +339,10 @@ class OrderController extends Controller
             <!DOCTYPE html>
             <html>
             <head>
-                <title>HTML to API - Invoice</title>
+                <meta charset="UTF-8">
+                <title>HTML to API - Hóa đơn</title>
                 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-                <meta http-equiv="content-type" content="text-html; charset=utf-8">
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                 <style type="text/css">
                     html, body, div, span, applet, object, iframe,
                     h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -398,7 +401,7 @@ class OrderController extends Controller
                     }
             
                     body {
-                        font-family: "Source Sans Pro", sans-serif;
+                        font-family: "DejaVu Sans", sans-serif;
                         font-weight: 300;
                         font-size: 12px;
                         margin: 0;
@@ -616,7 +619,7 @@ class OrderController extends Controller
                 <header class="clearfix">
                     <div class="container">
                         <div class="company-address">
-                            <h2 class="title">Multi-vendor E-commerce Application</h2>
+                            <h2 class="title">Ứng dụng Thương mại Điện tử Đa nhà bán</h2>
                             <p>
                                 37 Salah Salem St.<br>
                                 Cairo, Egypt
@@ -640,7 +643,7 @@ class OrderController extends Controller
                     <div class="container">
                         <div class="details clearfix">
                             <div class="client left">
-                                <p>INVOICE TO:</p>
+                                <p>HÓA ĐƠN CHO:</p>
                                 <p class="name">' . $orderDetails['name'] . '</p>
                                 <p>'
                                     . $orderDetails['address'] . ', ' . $orderDetails['city'] . ', ' . $orderDetails['state'] . ', ' . $orderDetails['country'] . '-' . $orderDetails['pincode'] .
@@ -648,12 +651,12 @@ class OrderController extends Controller
                                 <a href="mailto:' . $orderDetails['email'] . '">' . $orderDetails['email'] . '</a>
                             </div>
                             <div class="data right">
-                                <div class="title">Order ID: ' . $orderDetails['id'] . '</div>
+                                <div class="title">Mã đơn hàng: ' . $orderDetails['id'] . '</div>
                                 <div class="date">
-                                    Order Date: ' . date('Y-m-d h:i:s', strtotime($orderDetails['created_at'])) . '<br>
-                                    Order Amount: ₫ ' . $orderDetails['grand_total'] . '<br>
-                                    Order Status: ' . $orderDetails['order_status'] . '<br>
-                                    Payment Method: ' . $orderDetails['payment_method'] . '<br>
+                                    Ngày đặt hàng: ' . date('Y-m-d h:i:s', strtotime($orderDetails['created_at'])) . '<br>
+                                    Số tiền đơn hàng: ₫ ' . $orderDetails['grand_total'] . '<br>
+                                    Trạng thái đơn hàng: ' . $orderDetails['order_status'] . '<br>
+                                    Phương thức thanh toán: ' . $orderDetails['payment_method'] . '<br>
                                 </div>
                             </div>
                         </div>
@@ -661,12 +664,12 @@ class OrderController extends Controller
                         <table border="0" cellspacing="0" cellpadding="0">
                             <thead>
                                 <tr>
-                                    <th class="desc">Product Code</th>
-                                    <th class="qty">Size</th>
-                                    <th class="qty">Color</th>
-                                    <th class="qty">Quantity</th>
-                                    <th class="unit">Unit price</th>
-                                    <th class="total">Total</th>
+                                    <th class="desc">Mã sản phẩm</th>
+                                    <th class="qty">Kích cỡ</th>
+                                    <th class="qty">Màu sắc</th>
+                                    <th class="qty">Số lượng</th>
+                                    <th class="unit">Đơn giá</th>
+                                    <th class="total">Tổng</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -700,21 +703,21 @@ class OrderController extends Controller
                                         <td class="desc"></td>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
-                                        <td class="total" colspan=2>SUBTOTAL</td>
+                                        <td class="total" colspan=2>TỔNG PHỤ</td>
                                         <td class="total">₫ ' . $subTotal . '</td>
                                     </tr>
                                     <tr>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
-                                        <td class="total" colspan=2>SHIPPING</td>
+                                        <td class="total" colspan=2>PHÍ VẬN CHUYỂN</td>
                                         <td class="total">₫ 0</td>
                                     </tr>
                                     <tr>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
-                                        <td class="total" colspan=2>DISCOUNT</td>';
+                                        <td class="total" colspan=2>GIẢM GIÁ</td>';
 
                                         if ($orderDetails['coupon_amount'] > 0) {
                                             
@@ -731,7 +734,7 @@ class OrderController extends Controller
                                         <td class="desc"></td>
                                         <td class="desc"></td>
                                         <td class="desc"></td>
-                                        <td class="total" colspan="2">TOTAL</td>
+                                        <td class="total" colspan="2">TỔNG CỘNG</td>
                                         <td class="total">₫ ' . $orderDetails['grand_total'] . '</td>
                                     </tr>
                                 </tbody>
@@ -742,8 +745,8 @@ class OrderController extends Controller
             
                 <footer>
                     <div class="container">
-                        <div class="thanks">Thank you!</div>
-                        <div class="end">Invoice was created on a computer and is valid without the signature and seal.</div>
+                        <div class="thanks">Cảm ơn!</div>
+                        <div class="end">Hóa đơn được tạo trên máy tính và hợp lệ mà không cần chữ ký và con dấu.</div>
                     </div>
                 </footer>
             
@@ -755,19 +758,20 @@ class OrderController extends Controller
 
         
         
-        $dompdf = new \Dompdf\Dompdf();
-        
-        
-        $dompdf->loadHtml($invoiceHTML);
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $options->set('isFontSubsettingEnabled', true);
 
-        
+        $dompdf = new Dompdf($options);
+
+        // Ép Dompdf đọc đúng UTF-8
+        $html = mb_convert_encoding($invoiceHTML, 'HTML-ENTITIES', 'UTF-8');
+        $dompdf->loadHtml($html, 'UTF-8');
+
         $dompdf->setPaper('A4', 'landscape');
-
-        
         $dompdf->render();
-
-        
-        $dompdf->stream();
+        $dompdf->stream("invoice-{$orderDetails['id']}.pdf", ["Attachment" => true]);
     }
-
 }

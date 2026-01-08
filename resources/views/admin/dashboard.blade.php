@@ -14,6 +14,7 @@
                     </div>
                 </div>
             </div>
+@if (Auth::guard('admin')->user()->type == 'superadmin')
             <div class="row">
                 <div class="col-md-3 stretch-card mb-4">
                     <div class="card card-light-danger h-100">
@@ -160,7 +161,7 @@
                 </div>
             </div>
         </div>
-
+@endif
 
 
 
@@ -197,14 +198,16 @@
             });
 
             // === Biểu đồ doanh thu theo tháng ===
+            const last3Months = revenueByMonth.slice(-3);
+
             const monthlyCtx = document.getElementById('monthlyRevenueChart');
             new Chart(monthlyCtx, {
                 type: 'bar',
                 data: {
-                    labels: revenueByMonth.map(r => 'Tháng ' + r.month),
+                    labels: last3Months.map(r => 'Tháng ' + r.month),
                     datasets: [{
                         label: 'Doanh thu (VNĐ)',
-                        data: revenueByMonth.map(r => r.total),
+                        data: last3Months.map(r => r.total),
                         backgroundColor: 'rgba(255, 99, 132, 0.6)',
                         borderColor: '#FF6384',
                         borderWidth: 1

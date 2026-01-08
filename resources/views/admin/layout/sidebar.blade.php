@@ -153,14 +153,14 @@
 
                 <div class="collapse {{ $adminsOpen ? 'show' : '' }}" id="ui-admins">
                     <ul class="nav flex-column sub-menu" style="background: #fff !important; color: #052CA3 !important">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a style="{{ $is('admin/admins/admin') ? $ACTIVE : $INACTIVE_SUB }}"
                                class="nav-link" href="{{ url('admin/admins/admin') }}">Quản trị viên</a>
                         </li>
                         <li class="nav-item">
                             <a style="{{ $is('admin/admins/vendor') ? $ACTIVE : $INACTIVE_SUB }}"
                                class="nav-link" href="{{ url('admin/admins/vendor') }}">Nhà bán</a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a style="{{ $is('admin/admins') ? $ACTIVE : $INACTIVE_SUB }}"
                                class="nav-link" href="{{ url('admin/admins') }}">Tất cả</a>
@@ -290,30 +290,6 @@
                     </ul>
                 </div>
             </li>
-
-            {{-- Shipping --}}
-            @php $shipOpen = $is('admin/shipping-charges*'); @endphp
-            <li class="nav-item">
-                <a style="{{ $shipOpen ? $ACTIVE : '' }}"
-                   class="nav-link"
-                   data-toggle="collapse"
-                   href="#ui-shipping"
-                   aria-expanded="{{ $shipOpen ? 'true' : 'false' }}"
-                   aria-controls="ui-shipping">
-                    <i class="icon-layout menu-icon"></i>
-                    <span class="menu-title">Quản lý vận chuyển</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse {{ $shipOpen ? 'show' : '' }}" id="ui-shipping">
-                    <ul class="nav flex-column sub-menu" style="background: #fff !important; color: #052CA3 !important">
-                        <li class="nav-item">
-                            <a style="{{ $shipOpen ? $ACTIVE : $INACTIVE_SUB }}"
-                               class="nav-link" href="{{ url('admin/shipping-charges') }}">Phí vận chuyển</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
             {{-- Blog --}}
             <li class="nav-item">
                 <a style="{{ $is('admin/blog*') ? $ACTIVE : '' }}"
@@ -336,6 +312,30 @@
                 </a>
             </li>
 
+            {{-- Shipping --}}
+            @php $shipOpen = $is('admin/shipping-charges*'); @endphp
+            <li class="nav-item">
+                <a style="{{ $shipOpen ? $ACTIVE : '' }}"
+                   class="nav-link"
+                   data-toggle="collapse"
+                   href="#ui-shipping"
+                   aria-expanded="{{ $shipOpen ? 'true' : 'false' }}"
+                   aria-controls="ui-shipping">
+                    <!-- <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Quản lý vận chuyển</span>
+                    <i class="menu-arrow"></i> -->
+                </a>
+                <div class="collapse {{ $shipOpen ? 'show' : '' }}" id="ui-shipping">
+                    <ul class="nav flex-column sub-menu" style="background: #fff !important; color: #052CA3 !important">
+                        <li class="nav-item">
+                            <!-- <a style="{{ $shipOpen ? $ACTIVE : $INACTIVE_SUB }}"
+                               class="nav-link" href="{{ url('admin/shipping-charges') }}">Phí vận chuyển</a> -->
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            
         @endif
 
     </ul>
